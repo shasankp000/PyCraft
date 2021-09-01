@@ -23,7 +23,7 @@
 
 # Why the whole vpn thingy?
   >Sometimes mojang's server, libraries.minecraft.net is not available on some systems (especially for those living in Egypt). To fix this a vpn is used. Now the 
-  >governement of Egypt has kinda cracked down on openvpn (thanks to one of my testers, i wouldn't have known about it otherwise.) so Tor is the best solution to     >that.
+   governement of Egypt has kinda cracked down on openvpn (thanks to one of my testers, i wouldn't have known about it otherwise.), so Tor is the best solution to      that.
 
 # Coming soon:
   >FunMc (my minecraft server's website) and it's API for skin systems and capes (absolutely free)

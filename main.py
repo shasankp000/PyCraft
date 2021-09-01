@@ -618,7 +618,7 @@ class Pycraft():
         self.b4 = Button(self.pw, text="Stop Download", command = close)
         self.b4.place(x=450, y=600)
 
-        self.pb = Progressbar(self.pw, value=0, style='success.Striped.Horizontal.TProgressbar', length=1000, mode="determinate")
+        self.pb = Progressbar(self.pw, value=0, style='success.Striped.Horizontal.TProgressbar', length=1000, mode="indeterminate")
         self.pb.place(x=10, y=570)
         
         self.t1 = Thread(target=lambda: self.player.play())
@@ -635,7 +635,7 @@ class Pycraft():
 
     def handle_progress(self):
         '''handles the progress bar increment'''
-        self.pb.start(0.00001)
+        self.pb.start()
 
     def handle_download(self):
         '''Starts the download thread'''

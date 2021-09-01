@@ -277,6 +277,11 @@ def save_ram():
 
     s2 = get_current_value()
     flt_s2 = float(s2.rstrip(" MB"))
+    data["setting-info"][0]["allocated_ram"] = flt_s2
+
+    with open("settings.json", "w") as js_set:
+            json.dump(data, js_set, indent=4)
+            js_set.close()
     #print(s1)
 
     if flt_s2>(med_ram):

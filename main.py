@@ -168,7 +168,7 @@ class Pycraft():
             relief = "ridge")
         self.canvas.place(x = 0, y = 0)
 
-        self.background_img = PhotoImage(file = f"img/Background.png")
+        self.background_img = PhotoImage(file = f"img/background.png")
         self.background = self.canvas.create_image(
             635.0, 368.0,
             image=self.background_img)

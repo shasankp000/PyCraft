@@ -7,7 +7,6 @@ import tkinter as tk
 import sys
 import os
 import time
-from multiprocessing import Process
 from threading import Thread
 from tkvideo import tkvideo
 import platform
@@ -160,8 +159,8 @@ pb1 = Progressbar(root, value=0, style='info.Horizontal.TProgressbar', length=30
 pb1.place(x=250, y=400)        
 
 
-t1 = Process(target=lambda: os.system("./main.sh"))
-t2 = Process(target=lambda: os.system("main.bat"))
+t1 = Thread(target=lambda: os.system("./main.sh"))
+t2 = Thread(target=lambda: os.system("main.bat"))
 #t3 = Thread(target=lambda: v1.play())
 
 

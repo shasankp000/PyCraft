@@ -12,6 +12,8 @@
   
 # Installation
   >Run python install.py or python3 install.py(if on linux)
+ 
+
   >Then run python pycraft_gui.py or python3 pycraft_gui.py
 
 **IMPORTANT**

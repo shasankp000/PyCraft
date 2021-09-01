@@ -16,6 +16,10 @@
 
   >Then run python pycraft_gui.py or python3 pycraft_gui.py
 
+  >Before starting minecraft, do increase or decrease the ram in the settings, so as to update it in the settings file. Or else an error will pop concerning the         JVM.
+
+  > I will patch this in future releases.
+
 **IMPORTANT**
   >After exiting launcher window, please press CTRL+C in terminal to exit.
   >After stopping a download, please press CTRL+C twice. (This will close the launcher as well.)

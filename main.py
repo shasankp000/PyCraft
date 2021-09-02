@@ -103,7 +103,7 @@ mc_dir = data["Minecraft-home"]
 auth_type = data["User-info"][0]["AUTH_TYPE"]
 fps_boost = data["Fps-Boost"]
 fps_boost_selected = data["setting-info"][0]["fps_boost_selected"]
-allocated_ram = data["allocated-ram"]
+allocated_ram = data["allocated_ram"]
 allocated_ram_selected = data["setting-info"][0]["allocated_ram_selected"]
 jvm_args = data["jvm-args"]
 

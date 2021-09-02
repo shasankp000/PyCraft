@@ -44,7 +44,7 @@ fps_boost = data["Fps-Boost"]
 tor_enabled = data["Tor-Enabled"]
 fps_boost_selected = data["setting-info"][0]["fps_boost_selected"]
 tor_enabled_selected = data["setting-info"][0]["tor_enabled_selected"]
-allocated_ram = data["allocated-ram"]
+allocated_ram = data["allocated_ram"]
 allocated_ram_selected = data["setting-info"][0]["allocated_ram_selected"]
 
 style = Style()

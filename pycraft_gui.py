@@ -11,11 +11,12 @@ from threading import Thread
 from tkvideo import tkvideo
 import platform
 import psutil
-
+import platform
 
 
 currn_dir = os.getcwd()
 mc_dir = r"{}/.minecraft".format(currn_dir)
+os_name = platform.platform()
 
 def get_size(bytes, suffix="B"):
     #Found this on some website, i don't remember now. Used to get the total ram in GB.
@@ -33,7 +34,6 @@ def get_size(bytes, suffix="B"):
 
 
 svmem = psutil.virtual_memory()
-
 
 if os_name.startswith("Linux"):
 
@@ -58,10 +58,10 @@ if os_name.startswith("Linux"):
                     {
                         "fps_boost_selected" : False,
                         "tor_enabled_selected" : False,
-                        "allocated_ram_selected" : None
+                        "allocated_ram_selected" : 128.0 
                     }
                 ],
-                "allocated_ram" : None,
+                "allocated_ram" : 128.0,
                 "jvm-args": None,
                 "executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir)
             }
@@ -88,14 +88,13 @@ elif os_name.startswith("Windows"):
                     {
                         "fps_boost_selected" : False,
                         "tor_enabled_selected" : False,
-                        "allocated_ram_selected" : None 
+                        "allocated_ram_selected" : None
                     }
                 ],
                 "allocated_ram" : None,
                 "jvm-args": None,
                 "executablePath": r"{}/runtime/jre-legacy/windows/jre-legacy/bin/java".format(mc_dir)
             }
-
 
 if not os.path.exists(r"{}/settings.json".format(currn_dir)):
     with open("settings.json", "w") as js_set:

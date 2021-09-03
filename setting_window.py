@@ -195,9 +195,9 @@ sn2.place(x=500, y=680.0)
 
 canvas.create_text(
     152.5, 146.0,
-    text = "FPS Boost",
+    text = "FPS Boost(experimental - Requires relaunch)",
     fill = "#000000",
-    font = ("Segou Print", int(20.0)))
+    font = ("Segou Print", int(10.0)))
 
 canvas.create_text(
     231.5, 694.0,
@@ -212,10 +212,10 @@ canvas.create_text(
     font = ("Segou Print", int(20.0)))
 
 canvas.create_text(
-    171.5, 478.0,
-    text = "JVM Memory Allocation",
+    200.5, 478.0,
+    text = "JVM Memory Allocation(requires to relaunch)",
     fill = "#000000",
-    font = ("Segou Print", int(20.0)))
+    font = ("Segou Print", int(16.0)))
 
 canvas.create_text(
     539.5, 430,
@@ -239,6 +239,8 @@ slider = Scale(
 
 slider.place(x=5, y=500)
 
+
+
 #Very important system check.
 
 first_time_run = True
@@ -246,11 +248,11 @@ first_time_run = True
 if allocated_ram and allocated_ram_selected == None:
     #slider.set(allocated_ram_selected)
     first_time_run = True
-else:
+    print(first_time_run)
+elif allocated_ram and allocated_ram_selected != None:
     slider.set(allocated_ram_selected)
     first_time_run = False
-
-
+    print(first_time_run)
 
 
 current_value_label = Label(

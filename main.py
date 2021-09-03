@@ -101,8 +101,6 @@ username = data["User-info"][0]["username"]
 password = data["User-info"][0]["password"]
 mc_dir = data["Minecraft-home"]
 auth_type = data["User-info"][0]["AUTH_TYPE"]
-allocated_ram = data["allocated_ram"]
-allocated_ram_selected = data["setting-info"][0]["allocated_ram_selected"]
 jvm_args = data["jvm-args"]
 
 
@@ -119,7 +117,6 @@ else:
      os.mkdir("versions")
 
 print("**IMPORTANT**")
-print("After exiting launcher window, please press CTRL+C in terminal to exit.")
 print("After stopping a download, please press CTRL+C twice. (This will close the launcher as well.)")
 print("For people who have worked with python, it's an issue where i am unable to close the download thread directly at once by raising the KeyboardInterrupt exception.")
 print("")
@@ -129,7 +126,6 @@ print("If download fails, you may need to use a vpn(windows) or enable tor in se
 class Pycraft():
     global data
     global currn_dir
-    global allocated_ram
 
     
 
@@ -390,18 +386,20 @@ class Pycraft():
 
         self.fps_boost = self.data1["Fps-Boost"]
         self.fps_boost_selected = self.data1["setting-info"][0]["fps_boost_selected"]
+        self.allocated_ram = self.data1["allocated_ram"]
+        self.allocated_ram_selected = self.data1["setting-info"][0]["allocated_ram_selected"]
 
-        self.ram_gb = int(allocated_ram//1000)
-        print(allocated_ram)
+        self.ram_gb = self.allocated_ram//1000
+        print(self.allocated_ram)
         self.cpu_count = os.cpu_count()
 
         if self.fps_boost and self.fps_boost_selected == True:
             if self.ram_gb > 6:
-                self.j1 = f"-XX:+UnlockExperimentalVMOptions -d64, Xmx{self.ram_gb}G -Xms128M XX:ParallelGCThreads={(self.cpu_count)*2} -XX:+AggressiveOpts -XX:+AggressiveHeap"
+                self.j1 = f"-XX:+UnlockExperimentalVMOptions -d64, Xmx{int(self.ram_gb)}G -Xms128M XX:ParallelGCThreads={(self.cpu_count)*2} -XX:+AggressiveOpts -XX:+AggressiveHeap"
             else:
-                self.j1 = f"-XX:+UnlockExperimentalVMOptions -d64 Xmx{self.ram_gb}G -Xms128M XX:ParallelGCThreads={(self.cpu_count)*2} -XX:+AggressiveOpts -XX:+AggressiveHeap"
+                self.j1 = f"-XX:+UnlockExperimentalVMOptions -d64 Xmx{int(self.ram_gb)}G -Xms128M XX:ParallelGCThreads={(self.cpu_count)*2} -XX:+AggressiveOpts -XX:+AggressiveHeap"
         else:
-            self.j1 = f"-d64 -Xmx{self.ram_gb}G -Xms128M"
+            self.j1 = f"-d64 -Xmx{int(self.ram_gb)}G -Xms128M"
 
 
         data["jvm-args"] = self.j1

@@ -21,7 +21,6 @@
   > I will patch this in future releases.
 
 **IMPORTANT**
-  >After exiting launcher window, please press CTRL+C in terminal to exit.
   >After stopping a download, please press CTRL+C twice. (This will close the launcher as well.)
   >For people who have worked with python, it's an issue where i am unable to close the download thread directly at once by raising the KeyboardInterrupt exception.
 

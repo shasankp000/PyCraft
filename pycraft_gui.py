@@ -249,6 +249,7 @@ pb1.start()
 checksettings()
 #root.after(20000, lambda: pb1.stop())
 root.after(24000, lambda: root.withdraw())
+root.after(30000, lambda: root.destroy())
 
 
 

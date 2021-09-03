@@ -239,7 +239,16 @@ slider = Scale(
 
 slider.place(x=5, y=500)
 
-slider.set(allocated_ram_selected)
+#Very important system check.
+
+first_time_run = True
+
+if allocated_ram and allocated_ram_selected == None:
+    #slider.set(allocated_ram_selected)
+    first_time_run = True
+else:
+    slider.set(allocated_ram_selected)
+    first_time_run = False
 
 
 

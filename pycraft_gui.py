@@ -58,10 +58,10 @@ if os_name.startswith("Linux"):
                     {
                         "fps_boost_selected" : False,
                         "tor_enabled_selected" : False,
-                        "allocated_ram_selected" : 128.0 
+                        "allocated_ram_selected" : None
                     }
                 ],
-                "allocated_ram" : 128.0,
+                "allocated_ram" : None,
                 "jvm-args": None,
                 "executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir)
             }
@@ -88,10 +88,10 @@ elif os_name.startswith("Windows"):
                     {
                         "fps_boost_selected" : False,
                         "tor_enabled_selected" : False,
-                        "allocated_ram_selected" : 128.0 
+                        "allocated_ram_selected" : None 
                     }
                 ],
-                "allocated_ram" : 128.0,
+                "allocated_ram" : None,
                 "jvm-args": None,
                 "executablePath": r"{}/runtime/jre-legacy/windows/jre-legacy/bin/java".format(mc_dir)
             }

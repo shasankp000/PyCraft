@@ -248,11 +248,11 @@ first_time_run = True
 if allocated_ram and allocated_ram_selected == None:
     #slider.set(allocated_ram_selected)
     first_time_run = True
-    print(first_time_run)
+    #print(first_time_run)
 elif allocated_ram and allocated_ram_selected != None:
     slider.set(allocated_ram_selected)
     first_time_run = False
-    print(first_time_run)
+    #print(first_time_run)
 
 
 current_value_label = Label(

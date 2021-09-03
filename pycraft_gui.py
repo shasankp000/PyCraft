@@ -35,34 +35,66 @@ def get_size(bytes, suffix="B"):
 svmem = psutil.virtual_memory()
 
 
-settings = {
-            "User-info" : [
-                {
-                    "username": None,
-                    "password": None,
-                    "AUTH_TYPE": None,
-                }
-            ],
-            "PC-info" : [
-                {
-                    "OS": platform.platform(),
-                    "Total-Ram": f"{get_size(svmem.total)}",
-                }
-            ],
-            "Minecraft-home" : mc_dir,
-            "Fps-Boost" : False,
-            "Tor-Enabled" : False,
-            "setting-info" : [
-                {
-                    "fps_boost_selected" : False,
-                    "tor_enabled_selected" : False,
-                    "allocated_ram_selected" : 128.0 
-                }
-            ],
-            "allocated_ram" : 128.0,
-            "jvm-args": None,
-            "executablePath": r"{}/runtime/jre-legacy/bin/java".format(mc_dir)
-        }
+if os_name.startswith("Linux"):
+
+    settings = {
+                "User-info" : [
+                    {
+                        "username": None,
+                        "password": None,
+                        "AUTH_TYPE": None,
+                    }
+                ],
+                "PC-info" : [
+                    {
+                        "OS": platform.platform(),
+                        "Total-Ram": f"{get_size(svmem.total)}",
+                    }
+                ],
+                "Minecraft-home" : mc_dir,
+                "Fps-Boost" : False,
+                "Tor-Enabled" : False,
+                "setting-info" : [
+                    {
+                        "fps_boost_selected" : False,
+                        "tor_enabled_selected" : False,
+                        "allocated_ram_selected" : 128.0 
+                    }
+                ],
+                "allocated_ram" : 128.0,
+                "jvm-args": None,
+                "executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir)
+            }
+
+elif os_name.startswith("Windows"):
+    settings = {
+                "User-info" : [
+                    {
+                        "username": None,
+                        "password": None,
+                        "AUTH_TYPE": None,
+                    }
+                ],
+                "PC-info" : [
+                    {
+                        "OS": platform.platform(),
+                        "Total-Ram": f"{get_size(svmem.total)}",
+                    }
+                ],
+                "Minecraft-home" : mc_dir,
+                "Fps-Boost" : False,
+                "Tor-Enabled" : False,
+                "setting-info" : [
+                    {
+                        "fps_boost_selected" : False,
+                        "tor_enabled_selected" : False,
+                        "allocated_ram_selected" : 128.0 
+                    }
+                ],
+                "allocated_ram" : 128.0,
+                "jvm-args": None,
+                "executablePath": r"{}/runtime/jre-legacy/windows/jre-legacy/bin/java".format(mc_dir)
+            }
 
 
 if not os.path.exists(r"{}/settings.json".format(currn_dir)):

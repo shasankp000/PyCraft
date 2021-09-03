@@ -38,6 +38,8 @@
   
   >Ignore the upper two messages if installing for the first time. Still if error pops up you can apply the fixes as mentioned.
 
+  >Any changes in the settings (be it tor, fps boost, ram change, directory change) will require a launcher reboot(not to be confused with system reboot), to      take effect.
+
 # Why the whole vpn thingy?
   >Sometimes mojang's server, libraries.minecraft.net is not available on some systems (especially for those living in Egypt). To fix this a vpn is used. Now the 
    governement of Egypt has kinda cracked down on openvpn (thanks to one of my testers, i wouldn't have known about it otherwise.), so Tor is the best solution to      that.

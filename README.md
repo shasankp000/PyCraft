@@ -50,3 +50,7 @@
   >FunMc (my minecraft server's website) and it's API for skin systems and capes (absolutely free)
   
   >New microsoft account login system as per the latest changes according to mojang in Minecraft: Java Edition
+
+Below is a video stating how to use PyCraft Launcher(rip my trash pc -- i am still working on the fps boost)
+
+https://youtu.be/gK6xRqjvcBw

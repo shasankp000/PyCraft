@@ -14,6 +14,8 @@
   >To run Tor on windows as a service : https://deepdarkweb.github.io/how-to-install-tor-on-windows-without-the-tor-browser-running-tutorial/
 
   >**Fps boost has been shifted to experimental mode. That is , it has 50-50 chances of working successfully.It is still under development. Feedback would        be most graciously appreciated.**
+
+  >Discord Rich Presence (Rpc) added.
   
 # Installation
   >Run python install.py or python3 install.py(if on linux)

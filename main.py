@@ -498,7 +498,7 @@ class Pycraft():
                     # This is done to get only the version number, cutting out the rest of the string including whitespace
                         
                     # Not required while running forge
-                    #self.detected_ver1 = 
+                    self.detected_ver1 = self.mc_ver[:7]+"forge-"+self.mc_ver[7:]
                     
                     data["User-info"][0]["username"] = self.usr
                     data["User-info"][0]["password"] = self.pwd
@@ -523,7 +523,7 @@ class Pycraft():
                     
                     self.window.withdraw()
 
-                    self.minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(self.mc_ver, self.mc_dir, self.options)
+                    self.minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(self.detected_ver1, self.mc_dir, self.options)
                     print(f"Launching minecraft version {self.mc_ver}")
                     subprocess.call(self.minecraft_command)
 

@@ -16,6 +16,7 @@ import json
 import sys
 from threading import Thread
 import time
+import rpc_connect
 
 
 
@@ -753,6 +754,7 @@ class Pycraft():
 if __name__ == "__main__":
     try:
         Pycraft()
+        rpc_connect.rpc_connect()
     except KeyboardInterrupt:
         print("Program Exited")
 else:

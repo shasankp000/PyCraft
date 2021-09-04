@@ -16,8 +16,7 @@ import json
 import sys
 from threading import Thread
 import time
-import rpc_connect
-
+from time import mktime
 
 
 style = Style(theme="cosmo") #Sets the theme of the comboboxes and progressbar. Cosmo is a light-blue theme
@@ -116,18 +115,19 @@ else:
      os.chdir(".minecraft")
      os.mkdir("versions")
 
-print("**IMPORTANT**")
-print("After stopping a download, please press CTRL+C twice. (This will close the launcher as well.)")
-print("For people who have worked with python, it's an issue where i am unable to close the download thread directly at once by raising the KeyboardInterrupt exception.")
-print("")
-print("If download fails, you may need to use a vpn(windows) or enable tor in settings(linux)")
 
 
 class Pycraft():
     global data
     global currn_dir
 
-    
+
+    print("**IMPORTANT**")
+    print("After closing launcher window, press CTRL+C to exit. (This is needed to close the rpc connection. I will patch this later")
+    print("After stopping a download, please press CTRL+C twice. (This will close the launcher as well.)")
+    print("For people who have worked with python, it's an issue where i am unable to close the download thread directly at once by raising the KeyboardInterrupt exception.")
+    print("")
+    print("If download fails, you may need to use a vpn(windows) or enable tor in settings(linux)")
 
     def __init__(self):
 
@@ -149,6 +149,8 @@ class Pycraft():
 
         self.window.geometry(f"+{self.x_Left}+{self.y_Top}")
 
+
+            
 
         self.window.configure(bg = "#ffffff")
         self.canvas = Canvas(
@@ -562,7 +564,7 @@ class Pycraft():
 
                     self.window.withdraw()
 
-                    self.minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(self.mc_ver, self.mc_dir, self.options)
+                    self.minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(self.detected_ver1, self.mc_dir, self.options)
                     print(f"Launching minecraft version {self.mc_ver}")
                     subprocess.call(self.minecraft_command)
                 except minecraft_launcher_lib.exceptions.VersionNotFound as e:
@@ -754,7 +756,6 @@ class Pycraft():
 if __name__ == "__main__":
     try:
         Pycraft()
-        rpc_connect.rpc_connect()
     except KeyboardInterrupt:
         print("Program Exited")
 else:

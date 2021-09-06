@@ -12,7 +12,7 @@ from tkvideo import tkvideo
 import platform
 import psutil
 import platform
-
+from rpc_connect import rpc_connect
 
 currn_dir = os.getcwd()
 mc_dir = r"{}/.minecraft".format(currn_dir)
@@ -211,32 +211,36 @@ def checksettings():
                 showinfo(title="Abort", message="Tor cannot start without administrative privileges.")
                 sys.exit(0)
             with open("main.sh", "w") as f:
-                f.write("torsocks python3 main.py")
+                f.write("torsocks python3 main.py\n")
                 f.close()
                 os.system("chmod 700 main.sh")
                 root.after(23000, lambda:t1.start())
+                root.after(25000, lambda:os.system("python3 rpc_connect.py"))
         elif os_name.startswith("Windows"):
             with open("main.bat", "w") as f:
-                f.write("taskkill /f /im python.exe")  #frees up cpu and memory
+                f.write("taskkill /f /im python.exe\n")  #frees up cpu and memory
                 f.write("python main.py")
                 f.close()
                 root.after(23000, lambda: t2.start())
+                root.after(25000, lambda:os.system("python rpc_connect.py"))
 
     else:
             #time.sleep(20.0)
             #pb1.stop()
         if os_name.startswith("Linux"):
             with open("main.sh", "w") as f:
-                f.write("python3 main.py")
+                f.write("python3 main.py\n")
                 f.close()
             os.system("chmod 700 main.sh")
             root.after(23000, lambda: t1.start())
+            root.after(25000, lambda:os.system("python3 rpc_connect.py"))
         elif os_name.startswith("Windows"):
             with open("main.bat", "w") as f:
-                f.write("taskkill /f /im python.exe")  #frees up cpu and memory
+                f.write("taskkill /f /im python.exe\n")  #frees up cpu and memory
                 f.write("python main.py")
                 f.close()
             root.after(23000, lambda: t2.start())
+            root.after(25000, lambda:os.system("python rpc_connect.py"))
 
 
 
@@ -254,7 +258,7 @@ root.after(30000, lambda: root.destroy())
 
 if t1.is_alive() or t2.is_alive():
     pb1.stop()
-
+    
 try:
     root.mainloop()
 except KeyboardInterrupt:

@@ -2,9 +2,7 @@ import os
 import time
 import platform
 import getpass
-import shutil
-
-
+import time
 
 print("Getting necessary stuff...")
 time.sleep(5)
@@ -17,7 +15,7 @@ py_ver = platform.python_version()
 if os_name.startswith("Linux"):
     os.system("clear")
     os.system("python3 -m pip install -r requirements.txt")
-    os.system("sudo apt-get install gksudo fonts-symbola autoconf automake libtool gcc tor gtk2-engines-murrine -y")
+    os.system("sudo apt-get install gksudo fonts-symbola autoconf automake libtool gcc tor gtk2-engines-murrine python3 -y")
     os.system("git clone https://git.torproject.org/torsocks.git") # Fix for torsocks syscall issue 217
     os.chdir("torsocks")
     os.system("./autogen.sh")
@@ -25,25 +23,35 @@ if os_name.startswith("Linux"):
     os.system("make")
     os.system("sudo make install")
     os.system("clear")
-    print("Patching files...")
-    try:
-      if os.path.exists("/usr/lib/python3/dist-packages/minecraft_launcher_lib"):
-        os.chdir("/usr/lib/python3/dist-packages/minecraft_launcher_lib")
-        os.remove("forge.py")
-        shutil.copy(f"{currn_dir}/patches/forge.py", "/usr/lib/python3/dist-packages/minecraft_launcher_lib")
-    except PermissionError:
-      if os.path.exists(r"/home/{}/.local/lib/python3/site-packages/minecraft_launcher_lib".format(usr_accnt)):
-        os.chdir(f"/home/{usr_accnt}/.local/lib/python3/site-packages/minecraft_launcher_lib")
-        os.remove("forge.py")
-        shutil.copy(f"{currn_dir}/patches/forge.py", f"/home/{usr_accnt}/.local/lib/python3/site-packages/minecraft_launcher_lib")
     os.system("sudo rm -r torsocks")
     os.system("cd -")
+    os.system("clear")
+    import wget
+    print("Installing Java 16.......")
+    wget.download("https://download.java.net/java/GA/jdk13.0.2/d4173c853231432d94f001e99d882ca7/8/GPL/openjdk-13.0.2_linux-x64_bin.tar.gz", bar=wget.bar_adaptive)
+    os.system("sudo apt install openjdk-16-jdk -y")
     print("All requirements installed. Run pycraft_gui.py now to run the launcher.")
 elif os_name.startswith("Windows"):
     os.system("cls")
     os.system("pip install -r requirements.txt")
     os.system("cls")
-    print("Please replace the python file from the pacthes folder to c:\\users\\<yourname>\\appdata\\local\\programs\\python<version_number>\\site-packages\\minecraft_launcher_lib\\forge.py")
-    print("Ignore this message if you are running this program for the first time.")
+    os.chdir(r"C:\\Users\\{}\\Downloads\\ ".format(usr_accnt))
+    import wget
+    print("Installing python 3.9.6.....")
+    wget.download("https://www.python.org/ftp/python/3.9.6/python-3.9.6-amd64.exe", bar=wget.bar_adaptive)
+    filename = wget.detect_filename("https://www.python.org/ftp/python/3.9.6/python-3.9.6-amd64.exe")
+    os.system(filename)
+    os.system("cls")
+    print("Installing java 16.....")
+    wget.download("https://download.bell-sw.com/java/16.0.2+7/bellsoft-jdk16.0.2+7-windows-amd64.msi", bar=wget.bar_adaptive)
+    filename = wget.detect_filename("https://download.bell-sw.com/java/16.0.2+7/bellsoft-jdk16.0.2+7-windows-amd64.msi")
+    os.system(f"msiexec /i {filename}")
+    time.sleep(5)
+    os.remove(f"{filename}")
+    print("Creating desktop shortcut.....")
+    os.chdir(r"C:\\Users\\{}\\Desktop\\ ".format(usr_accnt))
+    os.system(f"shortcut.exe /F:Pycraft.lnk /A:C /T:{currn_dir}\\pycraft_gui.py /W:{currn_dir}")
+    os.system("cls")
+    print("You can set the icon of the shortcut with the icon in pycraft's folder.")
     print("All requirements installed. Run pycraft_gui.py now to run the launcher.")
 

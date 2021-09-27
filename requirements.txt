@@ -1,6 +1,10 @@
-minecraft_launcher_lib==3.6
+wheel
 wget
+minecraft_launcher_lib==4.0
 pyfiglet
 ttkbootstrap
 tkvideo
-psutil
+requests
+Pillow
+tkhtmlview
+speedtest-cli

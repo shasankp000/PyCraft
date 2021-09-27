@@ -53,6 +53,9 @@ window_s = style.master
 
 window_s.geometry("1024x768+130+50")
 window_s.configure(bg = "#3a3a3a")
+
+if os_name.startswith("Windows"):
+    window_s.iconbitmap("icon.ico")
      
 Tk_Width = 1024
 Tk_Height = 768
@@ -248,11 +251,11 @@ first_time_run = True
 if allocated_ram and allocated_ram_selected == None:
     #slider.set(allocated_ram_selected)
     first_time_run = True
-    #print(first_time_run)
+    print(first_time_run)
 elif allocated_ram and allocated_ram_selected != None:
     slider.set(allocated_ram_selected)
     first_time_run = False
-    #print(first_time_run)
+    print(first_time_run)
 
 
 current_value_label = Label(

@@ -32,8 +32,6 @@
 
   > Passwords are no longer stored in the launcher. Only player uuid, accessToken from auth servers  
     and clientToken is randomly generated on each run, for ely_by logins.
-  >
-  > Fixed UUIDs for players in cracked mode. (So as not to bypass bans from servers.)
 
 
 

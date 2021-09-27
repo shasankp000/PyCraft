@@ -90,7 +90,7 @@
    governement of Egypt has kinda cracked down on openvpn (thanks to one of my testers, i wouldn't have known about it otherwise.), so Tor is the best solution to      that.
 
 # Coming soon:
-  >FunMc (my minecraft server's website) and it's API for skin systems and capes (absolutely free)
+  >FunMc (my minecraft server's website).
   
   >New microsoft account login system as per the latest changes according to mojang in Minecraft: Java Edition
 

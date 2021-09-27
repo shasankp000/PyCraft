@@ -15,7 +15,6 @@
 
   >**Fps boost has been shifted to experimental mode. That is , it has 50-50 chances of working successfully.It is still under development. Feedback would        be most graciously appreciated.**
 
-  >Discord Rich Presence (Rpc) added.
   
 # Installation
   >Run python install.py or python3 install.py(if on linux)
@@ -32,13 +31,6 @@
   >For people who have worked with python, it's an issue where i am unable to close the download thread directly at once by raising the KeyboardInterrupt exception.
 
   >If download fails, you may need to use a vpn(windows) or enable tor in settings(linux)
-
-  >A recent bug has been fixed in minecraft forge(modded minecraft) installation. If on linux just replace the forge.py file in the patches folder with the on in       either /usr/lib/python3/dist-packages(if allowed, coz most installations are not done here without sudo) or 
-    /home/(your username)/.local/lib/python3/site-packages/minecraft_launcher_lib/forge.py.
-  
-  >On windows replace at C:\users\yourname\Appdata\local\programs\python(version-number)\site-packages\minecraft_launcher_lib\forge.py
-  
-  >Ignore the upper two messages if installing for the first time. Still if error pops up you can apply the fixes as mentioned.
 
   >**Any changes in the settings (be it tor, fps boost, ram change, directory change) will require a launcher reboot(not to be confused with system reboot),        to take effect.**
 

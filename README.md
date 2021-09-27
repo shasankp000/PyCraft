@@ -4,7 +4,7 @@
   >This launcher is not illegal as all files are downloaded from libraries.minecraft.net
   
 
-# Pycraft beta 1.03 release
+# Pycraft 1.03 release
 
   > Added Fabric installation support.
   >
@@ -44,7 +44,7 @@
   
   >To run Tor on windows as a service : https://deepdarkweb.github.io/how-to-install-tor-on-windows-without-the-tor-browser-running-tutorial/
 
-  >**Fps boost has been shifted to experimental mode. That is , it has 50-50 chances of working successfully.It is still under development. Feedback would        be most graciously appreciated.**
+  >**Fps boost has been shifted to beta testing mode. That is , it has been tested with java 16.It is still being tested. Feedback would be most graciously appreciated.**
 
   
 # Installation

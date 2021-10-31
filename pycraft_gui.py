@@ -12,7 +12,7 @@ from tkvideo import tkvideo
 import platform
 import psutil
 import platform
-from rpc_connect import rpc_connect
+import base64
 
 currn_dir = os.getcwd()
 mc_dir = r"{}/.minecraft".format(currn_dir)
@@ -38,11 +38,13 @@ svmem = psutil.virtual_memory()
 if os_name.startswith("Linux"):
 
     settings = {
+                "accessToken": None,
+                "clientToken": None,
                 "User-info" : [
                     {
                         "username": None,
-                        "password": None,
                         "AUTH_TYPE": None,
+                        "UUID": None
                     }
                 ],
                 "PC-info" : [
@@ -52,6 +54,7 @@ if os_name.startswith("Linux"):
                     }
                 ],
                 "Minecraft-home" : mc_dir,
+                "selected-version": None,
                 "Fps-Boost" : False,
                 "Tor-Enabled" : False,
                 "setting-info" : [
@@ -63,16 +66,19 @@ if os_name.startswith("Linux"):
                 ],
                 "allocated_ram" : 128.0,
                 "jvm-args": None,
-                "executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir)
+                "executablePath": "java"
+                #"executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir)
             }
 
 elif os_name.startswith("Windows"):
     settings = {
+                "accessToken": None,
+                "clientToken": None,
                 "User-info" : [
                     {
                         "username": None,
-                        "password": None,
                         "AUTH_TYPE": None,
+                        "UUID": None
                     }
                 ],
                 "PC-info" : [
@@ -82,6 +88,7 @@ elif os_name.startswith("Windows"):
                     }
                 ],
                 "Minecraft-home" : mc_dir,
+                "selected-version": None,
                 "Fps-Boost" : False,
                 "Tor-Enabled" : False,
                 "setting-info" : [
@@ -93,7 +100,8 @@ elif os_name.startswith("Windows"):
                 ],
                 "allocated_ram" : None,
                 "jvm-args": None,
-                "executablePath": r"{}/runtime/jre-legacy/windows/jre-legacy/bin/java".format(mc_dir)
+                "executablePath": r"C:\\Program Files\\BellSoft\\LibericaJDK-16\\bin\\java"
+                #"executablePath": r"{}/runtime/jre-legacy/windows/jre-legacy/bin/java".format(mc_dir)
             }
 
 if not os.path.exists(r"{}/settings.json".format(currn_dir)):
@@ -114,7 +122,6 @@ with open("settings.json", "r") as js_read:
 
 os_name = data["PC-info"][0]["OS"]
 username = data["User-info"][0]["username"]
-password = data["User-info"][0]["password"]
 mc_home = data["Minecraft-home"]
 fps_boost = data["Fps-Boost"]
 tor_enabled = data["Tor-Enabled"]
@@ -128,6 +135,7 @@ root = style.master
 root.configure(bg = "#3a3a3a")
 root.title("Pycraft Updater")
 root.geometry("761x403+140+50")
+
 
 Tk_Width = 761
 Tk_Height = 403
@@ -165,16 +173,27 @@ background = canvas.create_image(
 
 
 
+if not os.path.exists(r"{}/settings.json".format(currn_dir)):
+    c1 = Label(
+            text = "Generating settings.....",
+            font = ("Segou Print", int(16.0)),
+            bg="#3a3a3a",
+            fg="cyan1")
 
-canvas.create_text(
-    395, 350,
-    text = "Getting everything ready.....",
-    fill = "#c4c4c4",
-    font = ("Segou Print", int(16.0)))
+else:
+    c1 = Label(
+            text = "Reading settings.....",
+            font = ("Segou Print", int(16.0)),
+            bg="#3a3a3a",
+            fg="cyan1")
+
+c1.place(x=248, y=350)
+
+root.after(10000, lambda: c1.configure(text="Getting everything ready...."))
 
 canvas.create_text(
     400, 200,
-    text = "PyCraft Launcher 1.02",
+    text = "PyCraft Launcher 1.03",
     fill = "#c4c4c4",
     font = ("Segou Print", int(26.0)))
 
@@ -215,14 +234,12 @@ def checksettings():
                 f.close()
                 os.system("chmod 700 main.sh")
                 root.after(23000, lambda:t1.start())
-                root.after(25000, lambda:os.system("python3 rpc_connect.py"))
         elif os_name.startswith("Windows"):
             with open("main.bat", "w") as f:
                 f.write("taskkill /f /im python.exe\n")  #frees up cpu and memory
                 f.write("python main.py")
                 f.close()
                 root.after(23000, lambda: t2.start())
-                root.after(25000, lambda:os.system("python rpc_connect.py"))
 
     else:
             #time.sleep(20.0)
@@ -233,14 +250,12 @@ def checksettings():
                 f.close()
             os.system("chmod 700 main.sh")
             root.after(23000, lambda: t1.start())
-            root.after(25000, lambda:os.system("python3 rpc_connect.py"))
         elif os_name.startswith("Windows"):
             with open("main.bat", "w") as f:
                 f.write("taskkill /f /im python.exe\n")  #frees up cpu and memory
                 f.write("python main.py")
                 f.close()
             root.after(23000, lambda: t2.start())
-            root.after(25000, lambda:os.system("python rpc_connect.py"))
 
 
 

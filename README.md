@@ -94,4 +94,5 @@
 
 Below is a video stating how to use PyCraft Launcher(rip my trash pc -- i am still working on the fps boost)
 
-https://youtu.be/gK6xRqjvcBw
+https://youtu.be/8TiDc-Z2MA0
+

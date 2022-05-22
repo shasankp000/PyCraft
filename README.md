@@ -1,7 +1,11 @@
 # Project Info
   >A Minecraft launcher made in python.
-  >The main objective of this launcher is to enable players to enjoy minecraft (especially those without a mojang/microsoft account). 
-  >This launcher is not illegal as all files are downloaded from libraries.minecraft.net
+
+  >This Launcher aims to be the best free minecraft launcher for Linux primarily. Porting to other platforms will be done later.
+
+  >This launcher is not illegal as all files are downloaded from libraries.minecraft.net.
+
+  >Piracy concerned rich people feel free to press the back button on the browser :)
   
 
 # Pycraft 1.03 release
@@ -97,4 +101,4 @@ Below is a video stating how to use PyCraft Launcher(rip my trash pc -- i am sti
 https://youtu.be/8TiDc-Z2MA0
 
 # Project discontinued due to life issues 
-  Sorry guys :(
+  >Sorry guys :(

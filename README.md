@@ -96,5 +96,5 @@ Below is a video stating how to use PyCraft Launcher(rip my trash pc -- i am sti
 
 https://youtu.be/8TiDc-Z2MA0
 
-#Project discontinued due to life issues 
+# Project discontinued due to life issues 
   Sorry guys :(

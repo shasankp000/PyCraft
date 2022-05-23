@@ -1,3 +1,8 @@
+# Project discontinued due to life issues 
+  >Sorry guys, I'm facing a lot in my life right now so I can't devote time to this project anymore.
+  
+  >This project is still free to fork and can be continued by interested people.
+
 # Project Info
   >A Minecraft launcher made in python.
 
@@ -100,5 +105,4 @@ Below is a video stating how to use PyCraft Launcher(rip my trash pc -- i am sti
 
 https://youtu.be/8TiDc-Z2MA0
 
-# Project discontinued due to life issues 
-  >Sorry guys :(
+

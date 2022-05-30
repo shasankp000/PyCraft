@@ -1,7 +1,4 @@
-# Project discontinued due to life issues 
-  >Sorry guys, I'm facing a lot in my life right now so I can't devote time to this project anymore.
-  
-  >This project is still free to fork and can be continued by interested people.
+# Project restarted 
 
 # Project Info
   >A Minecraft launcher made in python.

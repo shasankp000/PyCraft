@@ -27,9 +27,9 @@ if os_name.startswith("Linux"):
     os.system("cd -")
     os.system("clear")
     import wget
-    print("Installing Java 16.......")
-    wget.download("https://download.java.net/java/GA/jdk13.0.2/d4173c853231432d94f001e99d882ca7/8/GPL/openjdk-13.0.2_linux-x64_bin.tar.gz", bar=wget.bar_adaptive)
-    os.system("sudo apt install openjdk-16-jdk -y")
+    print("Installing Java 17.......")
+    #wget.download("https://download.java.net/java/GA/jdk13.0.2/d4173c853231432d94f001e99d882ca7/8/GPL/openjdk-13.0.2_linux-x64_bin.tar.gz", bar=wget.bar_adaptive)
+    os.system("sudo apt install openjdk-17-jdk -y")
     print("All requirements installed. Run pycraft_gui.py now to run the launcher.")
 elif os_name.startswith("Windows"):
     os.system("cls")
@@ -49,7 +49,7 @@ elif os_name.startswith("Windows"):
     else:
         os.system("cls")
         print("Installing java 16.....")
-        wget.download("https://download.bell-sw.com/java/16.0.2+7/bellsoft-jdk16.0.2+7-windows-amd64.msi", bar=wget.bar_adaptive)
+        wget.download("https://download.bell-sw.com/java/17.0.3+7/bellsoft-jdk17.0.3+7-windows-amd64.msi", bar=wget.bar_adaptive)
         filename = wget.detect_filename("https://download.bell-sw.com/java/16.0.2+7/bellsoft-jdk16.0.2+7-windows-amd64.msi")
         os.system(f"msiexec /i {filename}")
     time.sleep(5)

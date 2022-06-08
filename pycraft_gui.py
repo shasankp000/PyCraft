@@ -66,7 +66,9 @@ if os_name.startswith("Linux"):
                 ],
                 "allocated_ram" : None,
                 "jvm-args": None,
-                "executablePath": "java"
+                "executablePath": "java",
+                "ramlimiterExceptionBypassed": False,
+                "ramlimiterExceptionBypassedSelected": False
                 #"executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir)
             }
 
@@ -100,7 +102,9 @@ elif os_name.startswith("Windows"):
                 ],
                 "allocated_ram" : None,
                 "jvm-args": None,
-                "executablePath": r"C:\\Program Files\\BellSoft\\LibericaJDK-17\\bin\\java"
+                "executablePath": r"C:\\Program Files\\BellSoft\\LibericaJDK-17\\bin\\java",
+                "ramlimiterExceptionBypassed": False,
+                "ramlimiterExceptionBypassedSelected": False
                 #"executablePath": r"{}/runtime/jre-legacy/windows/jre-legacy/bin/java".format(mc_dir)
             }
 
@@ -127,6 +131,8 @@ fps_boost = data["Fps-Boost"]
 tor_enabled = data["Tor-Enabled"]
 fps_boost_selected = data["setting-info"][0]["fps_boost_selected"]
 tor_enabled_selected = data["setting-info"][0]["tor_enabled_selected"]
+ramlimiterExceptionBypassed = data["ramlimiterExceptionBypassed"]
+ramlimiterExceptionBypassedSelected = data["ramlimiterExceptionBypassedSelected"]
 
 style = Style()
 
@@ -176,14 +182,14 @@ background = canvas.create_image(
 if not os.path.exists(r"{}/settings.json".format(currn_dir)):
     c1 = Label(
             text = "Generating settings.....",
-            font = ("Segou Print", int(16.0)),
+            font = ("Sunshiney", int(16.0)),
             bg="#3a3a3a",
             fg="cyan1")
 
 else:
     c1 = Label(
             text = "Reading settings.....",
-            font = ("Segou Print", int(16.0)),
+            font = ("Sunshiney", int(16.0)),
             bg="#3a3a3a",
             fg="cyan1")
 
@@ -194,8 +200,8 @@ root.after(10000, lambda: c1.configure(text="Getting everything ready...."))
 canvas.create_text(
     400, 200,
     text = "PyCraft Launcher 1.04",
-    fill = "#000000",
-    font = ("Segou Print", int(26.0)))
+    fill = "cyan1",
+    font = ("Galiver Sans", int(26.0)))
 
 
 

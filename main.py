@@ -1,8 +1,9 @@
-from tkinter import Canvas, PhotoImage, Button, Entry, Tk, StringVar, DoubleVar
+from tkinter import Canvas, PhotoImage, Entry, Tk, StringVar, DoubleVar
+from tkinter import Button as Button1
 from tkinter.font import Font
 
 import tkinter as tk
-from tkinter.ttk import Combobox, Progressbar, Frame, Label, Radiobutton, Notebook, Checkbutton, Scale
+from tkinter.ttk import Combobox, Progressbar, Frame, Label, Radiobutton, Notebook, Checkbutton, Scale, Button
 from tkinter.messagebox import showerror, showinfo, showwarning, askquestion
 from tkvideo import tkvideo
 import os
@@ -20,11 +21,9 @@ from threading import Thread
 import time
 from time import mktime
 import requests
-from speedtracker import SpeedTracker
-import webbrowser
-import webview 
+from speedtracker import SpeedTracker 
 import wget
-from zipfile import ZipFile
+import zipfile 
 from shutil import move
 import psutil
 
@@ -120,6 +119,8 @@ fps_boost_selected = data["setting-info"][0]["fps_boost_selected"]
 tor_enabled_selected = data["setting-info"][0]["tor_enabled_selected"]
 allocated_ram = data["allocated_ram"]
 allocated_ram_selected = data["setting-info"][0]["allocated_ram_selected"]
+ramlimiterExceptionBypassed = data["ramlimiterExceptionBypassed"]
+ramlimiterExceptionBypassedSelected = data["ramlimiterExceptionBypassedSelected"]
 
 
 print(os_name)
@@ -166,6 +167,9 @@ class Pycraft():
     global os_name
     global mc_dir
     global selected_ver
+    global ramlimiterExceptionBypassed
+    global ramlimiterExceptionBypassedSelected
+
 
     print("**IMPORTANT**")
     print("After stopping a download before it's completed, please press CTRL+C twice. (This will close the launcher as well.)")
@@ -176,7 +180,11 @@ class Pycraft():
     global data
 
     def __init__(self):
-
+        
+        self.custom_font = Font(family="Galiver Sans", size=26)
+        self.custom_font2 = Font(family="Galiver Sans", size=26)
+        self.custom_font3 = Font(family="Galiver Sans", size=16, )
+        self.custom_font4 = Font(family="Galiver Sans", size=12)
         
 
 
@@ -240,26 +248,44 @@ class Pycraft():
         self.img9 = PhotoImage(file = f"img/img9.png")
         self.b9 = Button(
             self.p1, 
-            image = self.img9,
-            borderwidth = 0,
-            highlightthickness = 0,
+            text="Download", 
+            #height=2, 
+            #width=10,
+            #background="green",
+            #foreground="black",
             command = self.handle_download,
-            relief = "flat")
+            bootstyle="success-outline"
+            )
 
         self.b9.place(
             x = 16, y = 500,
             width = 249,
             height = 48)
 
-        self.b10 = Button(self.p1, text="Save", height=2, width=5,  command=self.save_version, foreground="#15d38f", background="#23272a")
-        self.b10.place(x=646, y=500)
+        self.b10 = Button(
+            self.p1, 
+            text="Select version", 
+            #height=2, 
+            #width=20,  
+            command=self.save_version, 
+            #background="green",
+            #foreground="black",
+            #relief="flat",
+            #font=self.custom_font3,
+            bootstyle="info-outline"
+            )
+        self.b10.place(
+            x=646, y=500,
+            width = 249,
+            height = 48
+        )
 
 
         self.canvas2.create_text(
                 120, 50.0,
                 text = "Download/Run Options",
                 fill = "#000000",
-                font = ("Sunshiney", int(16.0)))
+                font = ("Galiver Sans", int(16.0)))
 
 
 
@@ -281,10 +307,10 @@ class Pycraft():
                 400, 50.0,
                 text = "Available Offline",
                 fill = "#000000",
-                font = ("Sunshiney", int(16.0)))
+                font = ("Galiver Sans", int(16.0)))
 
             self.offversionsList = Combobox(self.p1, width=15)
-            self.offversionsList.place(x=320, y=150)
+            self.offversionsList.place(x=320, y=100)
             self.offversionsList["values"] = self.offline_versions
             self.offversionsList["state"] = "readonly"
             self.offversionsList.current(0)
@@ -318,7 +344,7 @@ class Pycraft():
                 self.fabric_versions.append(k)
 
             self.fversionsList = Combobox(self.p1, width=15)
-            self.fversionsList.place(x=610, y=150)
+            self.fversionsList.place(x=610, y=100)
             self.fversionsList["values"] = self.forge_versions
             self.fversionsList["state"] = "readonly"
             self.fversionsList.current(0)
@@ -326,7 +352,7 @@ class Pycraft():
             self.fversionsList.bind('<<ComboboxSelected>>')
 
             self.versionsList = Combobox(self.p1, width=15)
-            self.versionsList.place(x=320, y=150)
+            self.versionsList.place(x=320, y=100)
             self.versionsList["values"] = self.versions
             self.versionsList["state"] = "readonly"
             self.versionsList.current(0)
@@ -355,41 +381,38 @@ class Pycraft():
                 680, 50.0,
                 text = "Forge Versions",
                 fill = "#000000",
-                font = ("Sunshiney", int(16.0)))
+                font = ("Galiver Sans", int(16.0)))
 
             self.canvas2.create_text(
                 400, 50.0,
                 text = "Vanilla Versions",
                 fill = "#000000",
-                font = ("Sunshiney", int(16.0)))
+                font = ("Galiver Sans", int(16.0)))
 
             self.canvas2.create_text(
                 80, 250,
                 text = "Fabric Versions",
-                fill = "#000000",
-                font = ("Sunshiney", int(16.0)))
+                fill = "yellow",
+                font = ("Galiver Sans", int(16.0), "bold"))
 
             self.canvas2.create_text(
-                380, 250,
+                420, 250,
                 text = "FPS Client Versions (Not finished yet)",
-                fill = "#000000",
-                font = ("Sunshiney", int(16.0)))
+                fill = "yellow",
+                font = ("Galiver Sans", int(16.0), "bold"))
 
             self.selected_download = tk.StringVar()
             self.download_options = Combobox(self.p1, textvariable=self.selected_download, width=15)
             self.download_options["values"] = self.options_dl
             self.download_options["state"] = "readonly"
-            self.download_options.place(x=10, y=150)
+            self.download_options.place(x=10, y=100)
             self.download_options.current(0)
 
             self.download_options.bind('<<ComboboxSelected>>')
 
             self.p1.pack(fill='both', expand=True)
 
-            self.custom_font = Font(family="Sunshiney", size=26)
-            self.custom_font2 = Font(family="Sunshiney", size=26)
-            self.custom_font3 = Font(family="Sunshiney", size=16, )
-            self.custom_font4 = Font(family="Sunshiney", size=12)
+
             
 
             self.canvas = Canvas(
@@ -408,10 +431,10 @@ class Pycraft():
                 image=self.background_img)
 
             self.canvas.create_text(
-                460,150,
+                500,150,
                 text = "Pycraft Launcher",
-                fill = "#000000",
-                font = ("Sunshiney", int(46.0))
+                fill = "black",
+                font = ("Minecraft", int(36.0))
             )
 
 
@@ -420,15 +443,12 @@ class Pycraft():
                 self.frame1,
                 #image = self.img3,
                 text = f'{selected_ver}\n' + 'Ready to Play',
-                font=self.custom_font3,
-                background="green",
-                foreground="black",
-                borderwidth = 0,
-                height=20,
-                width=20,
-                highlightthickness = 0,
+                #background="green",
+                #foreground="black",
+                #height=20,
+                #width=20,
                 command=self.password_window,
-                relief = "flat")
+                bootstyle="success-outline")
 
             if connected == True:
 
@@ -450,7 +470,7 @@ class Pycraft():
 
 
 
-            self.img5 = PhotoImage(file = f"img/img6.png")
+            '''self.img5 = PhotoImage(file = f"img/img6.png")
             self.b5 = Button(
                 self.frame1,
                 image = self.img5,
@@ -474,12 +494,12 @@ class Pycraft():
             self.b6.place(
                 x = 1112, y = 0,
                 width = 70,
-                height = 52)
+                height = 52)'''
 
 
 
             self.img10 = PhotoImage(file = f"img/img10.png")
-            self.b10 = Button(
+            self.b10 = Button1(
                 self.frame1,
                 image = self.img10,
                 borderwidth = 0,
@@ -501,18 +521,18 @@ class Pycraft():
 
             if connected == True:
 
-                self.l3.config(text=data["User-info"][0]["username"], font=self.custom_font3, foreground="#15d38f", background="#23272a")
+                self.l3.config(text=data["User-info"][0]["username"], font=self.custom_font3, foreground="black", background="#C9CDEC")
 
-                self.custom_font1 = Font(family="Sunshiney", size=14)
+                self.custom_font1 = Font(family="Galiver Sans", size=14)
                 
                 self.acc_method = data["User-info"][0]["AUTH_TYPE"]
 
                 if self.acc_method == "mojang login":
-                    self.l4.config(text="mojang account", font=self.custom_font1, foreground="#15d38f", background="#23272a")
+                    self.l4.config(text="mojang account", font=self.custom_font1, foreground="black", background="#C9CDEC")
                 elif self.acc_method == "ely_by login":
-                    self.l4.config(text="ely.by account", font=self.custom_font1, foreground="#15d38f", background="#23272a")
+                    self.l4.config(text="ely.by account", font=self.custom_font1, foreground="black", background="#C9CDEC")
                 elif self.acc_method == "cracked login":
-                    self.l4.config(text="no account", font=self.custom_font1, foreground="#15d38f", background="#23272a")
+                    self.l4.config(text="no account", font=self.custom_font1, foreground="black", background="#C9CDEC")
             
             elif connected == False:
 
@@ -520,11 +540,11 @@ class Pycraft():
                     json.dump(data, f, indent=4)
                     f.close()
 
-                self.l3.config(text=data["User-info"][0]["username"], font=self.custom_font3, foreground="#15d38f", background="#23272a")
+                self.l3.config(text=data["User-info"][0]["username"], font=self.custom_font3, foreground="#15d38f", background="#C9CDEC")
 
-                self.custom_font1 = Font(family="Sunshiney", size=14)
+                self.custom_font1 = Font(family="Galiver Sans", size=14)
 
-                self.l4.config(text="User is offline", font=self.custom_font1, foreground="#15d38f", background="#23272a")
+                self.l4.config(text="User is offline", font=self.custom_font1, foreground="#15d38f", background="#C9CDEC")
 
             '''
 
@@ -532,19 +552,19 @@ class Pycraft():
                 1141.5, 280.0,
                 text = "Password",
                 fill = "#000000",
-                font = ("Segoe Print", int(16.0)))'''
+                font = ("Segoe Print", int(16.0)))
 
             self.canvas.create_text(
                 154.5, 700.0,
                 text = "Settings",
                 fill = "#15d38f",
-                font = ("Sunshiney", int(26.0)))
+                font = ("Sunshiney", int(26.0)))'''
 
             self.canvas.create_text(
-                1203.0, 709.0,
-                text = "v1.04-beta-rc2",
+                70, 550,
+                text = "v1.04-beta-2",
                 fill = "#000000",
-                font = ("Sunshiney", int(16.0)))
+                font = ("Galiver Sans", int(16.0)))
 
             if connected == False:
                 showinfo(title="No internet access.", message="You are offline!\n You won't have access to the following features: \n Skins System \n Downloads \n Ely.by accounts.")
@@ -562,6 +582,15 @@ class Pycraft():
             self.current_value = DoubleVar()
             
 
+            #Small hack for remembering settings in the gui
+            
+
+            if tor_enabled_selected == True:
+                self.cb2 = StringVar(value="selected")
+            else:
+                cb2 = StringVar(value="deselected")
+
+
 
 
             self.window_s = Frame(self.nb)
@@ -569,15 +598,7 @@ class Pycraft():
             self.svmem = psutil.virtual_memory()
 
 
-            self.value_label = Label(
-                self.window_s,
-                text=self.get_current_value(),
-                foreground="#15d38f",
-                style = "info.TLabel",
-                background='#23272a'
-            )
-            self.value_label.place(x=370, y=530)
- 
+        
 
 
             self.canvas5 = Canvas(
@@ -588,7 +609,18 @@ class Pycraft():
                 bd = 0,
                 highlightthickness = 0,
                 relief = "ridge")
-            self.canvas5.place(x = 0, y = 0)
+            self.canvas5.place(x = 3, y = 0)
+
+            self.value_label = Label(
+            self.canvas5,
+            text=self.get_current_value(),
+            foreground="#15d38f",
+            style = "info.TLabel",
+            background='#23272a'
+            )
+
+            self.value_label.place(x=270, y=530)
+ 
 
             self.background_img3 = PhotoImage(file = f"img/bg.png")
             self.background3 = self.canvas5.create_image(
@@ -598,10 +630,10 @@ class Pycraft():
             self.canvas5.create_text(
                 539.5, 45.5,
                 text = "SETTINGS",
-                fill = "#000000",
-                font = ("Sunshiney", int(20.0)))
+                fill = "black",
+                font = ("Galiver Sans", int(20.0), "bold"))
 
-            self.canvas5.create_text(
+            '''self.canvas5.create_text(
                 562.0, 619.0,
                 text = "Network Settings",
                 fill = "#000000",
@@ -611,13 +643,13 @@ class Pycraft():
 
 
             self.sn1 = Checkbutton(self.window_s, style="info.Roundtoggle.Toolbutton", onvalue="selected", offvalue="deselected", command=self.check2, variable=self.cb1)
-            self.sn1.place(x=500, y=135.0)
+            self.sn1.place(x=500, y=135.0)'
 
             self.sn2 = Checkbutton(self.window_s, style="info.Roundtoggle.Toolbutton", onvalue="selected", offvalue="deselected", command=self.check3, variable=self.cb2)
-            self.sn2.place(x=500, y=680.0)
+            self.sn2.place(x=500, y=680.0)'''
 
             self.current_value_label = Label(
-                self.window_s,
+                self.canvas5,
                 text='Ram Assigned:',
                 style = "info.TLabel",
                 background='#23272a',
@@ -629,35 +661,35 @@ class Pycraft():
 
 
 
-            self.canvas5.create_text(
+            '''self.canvas5.create_text(
                 152.5, 146.0,
                 text = "FPS Boost(experimental - Requires relaunch)",
                 fill = "#000000",
-                font = ("Sushiney", int(10.0)))
+                font = ("Sushiney", int(10.0)))'''
 
-            self.canvas5.create_text(
+            '''self.canvas5.create_text(
                 231.5, 694.0,
                 text = "Enable Tor(requires to relaunch)",
                 fill = "#000000",
-                font = ("Sunshiney", int(16.0)))
+                font = ("Sunshiney", int(16.0)))'''
 
             self.canvas5.create_text(
                 230, 225,
                 text = "Minecraft Directory(requires to relaunch)",
-                fill = "#000000",
-                font = ("Sunshiney", int(20.0)))
+                fill = "yellow",
+                font = ("Galiver Sans", int(17.0), "bold"))
 
             self.canvas5.create_text(
-                200.5, 478.0,
+                240.5, 478.0,
                 text = "JVM Memory Allocation(requires to relaunch)",
-                fill = "#000000",
-                font = ("Sunshiney", int(16.0)))
+                fill = "yellow",
+                font = ("Galiver Sans", int(16.0), "bold"))
 
             self.canvas5.create_text(
                 539.5, 430,
                 text = "Minecraft-Settings",
-                fill = "#000000",
-                font = ("Sushiney", int(20.0)))
+                fill = "yellow",
+                font = ("Galiver Sans", int(20.0), "bold"))
 
             self.str_ram = data["PC-info"][0]["Total-Ram"].strip("    GB")
             self.ram = float(self.str_ram)
@@ -706,16 +738,16 @@ class Pycraft():
             self.l3.place(x=460, y=530)
 
 
-            self.entry0_img = PhotoImage(file = f"img/img_textBox3.png")
-            self.entry0_bg = self.canvas5.create_image(
-                333.5, 297.0,
-                image = self.entry0_img)
+            #self.entry0_img = PhotoImage(file = f"img/img_textBox3.png")
+            #self.entry0_bg = self.canvas5.create_image(
+            #    333.5, 297.0,
+            #    image = self.entry0_img)
 
             self.entry0 = Entry(
                 self.window_s,
                 bd = 0,
                 bg = "#c4c4c4",
-                font = ("Segou Print", 20),
+                font = ("Sunshiney", 20),
                 highlightthickness = 0)
 
             self.entry0.insert(0, f"{mc_home}")
@@ -723,18 +755,15 @@ class Pycraft():
             self.curn_path = self.entry0.get()
 
             self.entry0.place(
-                x = 60.0, y = 267.0,
+                x = 10.0, y = 267.0,
                 width = 547.0,
                 height = 62)
 
-            self.img7 = PhotoImage(file = f"img/img3.png")
             self.b7 = Button(
-                self.window_s,
-                image = self.img7,
-                borderwidth = 0,
-                highlightthickness = 0,
+                self.canvas5,
+                text="Save",
                 command = self.save,
-                relief = "flat")
+                bootstyle="success-outline")
 
             self.b7.place(
                 x = 790, y = 267,
@@ -742,17 +771,15 @@ class Pycraft():
                 height = 60)
 
             self.b15 = Button(
-                self.window_s,
-                image = self.img7,
-                borderwidth = 0,
-                highlightthickness = 0,
+                self.canvas5,
+                text="Save",
                 command = self.save_ram,
-                relief = "flat")
+                bootstyle="danger-outline")
 
             self.b15.place(
-                x = 790, y = 530,
-                width = 119,
-                height = 60)
+                x = 790, y = 520,
+                width = 120,
+                height = 40)
 
 
             self.flt_s1 = ""
@@ -760,10 +787,47 @@ class Pycraft():
             self.flt_s2 = ""
             self.s2 = ""
 
+            self.window_t = Frame(self.nb)
+
+            self.canvas6 = Canvas(
+                self.window_t,
+                bg = "#23272a",
+                height = 720,
+                width = 1024,
+                bd = 0,
+                highlightthickness = 0,
+                relief = "ridge")
+            self.canvas6.place(x = 3, y = 0)
+
+
+            self.background_img4 = PhotoImage(file = f"img/bg.png")
+            self.background4 = self.canvas6.create_image(
+                    500.0, 280.0,
+                    image=self.background_img4)
+
+            self.canvas6.create_text(
+                220.0, 55.0,
+                text = "Bypass ram limiter",
+                fill = "#000000",
+                font = ("Galiver Sans", int(20.0), "bold"))
+
+
+            if ramlimiterExceptionBypassedSelected== True:
+                self.cb1 = StringVar(value="selected")
+            else:
+                self.cb1 = StringVar(value="deselected")
+
+
+            self.sn1 = Checkbutton(self.window_t, bootstyle="success-square-toggle", onvalue="selected", offvalue="deselected", command=self.check2, variable=self.cb1)
+            self.sn1.place(x=600, y=55.0)
+
+
+
             
             self.nb.add(self.frame1, text="Home")
             self.nb.add(self.p1, text="Installations")
             self.nb.add(self.window_s, text="Settings")
+            self.nb.add(self.window_t, text="Additional Settings")
 
             self.window.resizable(False, False)
             self.window.mainloop()
@@ -811,21 +875,11 @@ class Pycraft():
 
   
 
-        #Small hack for remembering settings in the gui
-        if fps_boost_selected == True:
-            self.cb1 = StringVar(value="selected")
-        else:
-            self.cb1 = StringVar(value="deselected")
-
-        if tor_enabled_selected == True:
-            self.cb2 = StringVar(value="selected")
-        else:
-            cb2 = StringVar(value="deselected")
 
 
 
 
-    def check2(self):
+    '''def check2(self):
         global fps_boost
         global fps_boost_selected
         if cb1.get() == "selected":
@@ -843,7 +897,31 @@ class Pycraft():
 
         with open("settings.json", "w") as js_set:
             json.dump(data, js_set, indent=4)
+            js_set.close()'''
+
+    
+    def check2(self):
+        global ramlimiterExceptionBypassed
+        global ramlimiterExceptionBypassedSelected
+        if self.cb1.get() == "selected":
+            ramlimiterExceptionBypassed = True
+            ramlimiterExceptionBypassedSelected = True
+                            
+        elif self.cb1.get() == "deselected":
+            ramlimiterExceptionBypassed = False
+            ramlimiterExceptionBypassedSelected = False
+                    
+                            
+                        
+        data["ramlimiterExceptionBypassed"] = ramlimiterExceptionBypassed
+        data["ramlimiterExceptionBypassedSelected"] = ramlimiterExceptionBypassedSelected
+
+
+        with open("settings.json", "w") as js_set:
+            json.dump(data, js_set, indent=4)
             js_set.close()
+
+
 
 
     def check3(self):
@@ -926,16 +1004,33 @@ class Pycraft():
         #print(s1)
 
         if self.flt_s2>(self.med_ram):
-            self.slider.set(self.med_ram)
-            self.current_value_label.config(text=f"Ram Assigned: {self.med_ram} MB", font=self.custom_font4)
-            data["allocated_ram"] = self.med_ram
-            print("Changed to: ", self.med_ram)
+            if ramlimiterExceptionBypassed == True:
+                self.slider.set(self.flt_s2)
+                self.current_value_label.config(text=f"Ram Assigned: {self.flt_s2} MB", font=self.custom_font4)
+                showinfo(title="Done", message=f"Allocated {self.flt_s2} MB of ram")
 
-            with open("settings.json", "w") as js_set:
-                    json.dump(data, js_set, indent=4)
-                    js_set.close()
 
-            showerror(title="Error!", message="Cannot assign more than 50 percent of host OS's ram. This is intended for low end pc(s) to run smoothly.")
+                data["allocated_ram"] = self.flt_s2
+                print("Selected: ", self.flt_s2)
+                print("Changed to: ", self.flt_s2)
+
+                with open("settings.json", "w") as js_set:
+                        json.dump(data, js_set, indent=4)
+                        js_set.close()
+
+            else:
+        
+                self.slider.set(self.med_ram)
+                self.current_value_label.config(text=f"Ram Assigned: {self.med_ram} MB", font=self.custom_font4)
+                data["allocated_ram"] = self.med_ram
+                print("Changed to: ", self.med_ram)
+
+                with open("settings.json", "w") as js_set:
+                        json.dump(data, js_set, indent=4)
+                        js_set.close()
+
+                showerror(title="Error!", message="Cannot assign more than 50 percent of host OS's ram. This is intended for low end pc(s) to run smoothly.")
+        
         elif self.flt_s2<(self.med_ram):
             self.slider.set(self.flt_s2)
             self.current_value_label.config(text=f"Ram Assigned: {self.flt_s2} MB", font=self.custom_font4)
@@ -1609,30 +1704,24 @@ class Pycraft():
             elif self.selected_ver.startswith("snapshot"):
                     self.detected_ver1 = self.selected_ver.strip("snapshot ")
 
-            try:
-                showinfo(title="Installation started...", message=f"Installing minecraft version {self.selected_ver}")
-                minecraft_launcher_lib.install.install_minecraft_version(self.detected_ver1,self.mc_dir, callback=self.callback)
+            showinfo(title="Installation started...", message=f"Installing minecraft version {self.selected_ver}")
+            minecraft_launcher_lib.install.install_minecraft_version(self.detected_ver1,self.mc_dir, callback=self.callback)
 
-                data["selected-version"] = "Vanilla:" + " " + f"{self.selected_ver}"
-                with open("settings.json", "w") as f:
-                    json.dump(data, f, indent=4)
-                    f.close()
+            data["selected-version"] = "Vanilla:" + " " + f"{self.selected_ver}"
+            with open("settings.json", "w") as f:
+                json.dump(data, f, indent=4)
+                f.close()
                 
-                self.selected_version = data["selected-version"]
+            self.selected_version = data["selected-version"]
 
-                self.l5.config(text=self.selected_version, font=self.custom_font, fg="#15d38f", bg="#23272a")
+            self.l5.config(text=self.selected_version, font=self.custom_font, fg="#15d38f", bg="#23272a")
 
-            except:
-                showerror(title="Error", message="Errors encountered while installing...")
         elif self.dl_opt == "Forge":
             self.selected_ver = self.fversionsList.get()
                 
             if supports_automatic_install(self.selected_ver):
-                try:
-                    showinfo(title="Installation started..", message=f"Installing forge version {self.selected_ver}")
-                    install_forge_version(self.selected_ver, self.mc_dir, callback=self.callback)
-                except:
-                    showerror(title="Error", message="Errors encountered while installing...")
+                showinfo(title="Installation started..", message=f"Installing forge version {self.selected_ver}")
+                install_forge_version(self.selected_ver, self.mc_dir, callback=self.callback)
 
                 data["selected-version"] = "Forge:" + " " + f"{self.selected_ver}"
                 with open("settings.json", "w") as f:
@@ -1643,30 +1732,10 @@ class Pycraft():
 
                 self.l5.config(text=self.selected_version, font=self.custom_font, fg="#15d38f", bg="#23272a")
             else:
-                try:
-                    showinfo(title="Installation started..", message=f"Installing forge version {self.selected_ver}")
-                    run_forge_installer(self.selected_ver)
+                showinfo(title="Installation started..", message=f"Installing forge version {self.selected_ver}")
+                run_forge_installer(self.selected_ver)
 
-                    data["selected-version"] = "Forge:" + " " + f"{self.selected_ver}"
-                    with open("settings.json", "w") as f:
-                        json.dump(data, f, indent=4)
-                        f.close()
-
-                    self.selected_version = data["selected-version"]
-
-                    self.l5.config(text=self.selected_version, font=self.custom_font, fg="#15d38f", bg="#23272a")
-
-                except:
-                    showerror(title="Error", message="Errors encountered while installing...")
-
-        elif self.dl_opt == "Fabric":
-            self.selected_ver = self.frversionsList.get()
-
-            try:
-                showinfo(title="Installation started..", message=f"Installing fabric version {self.selected_ver}")
-                install_fabric(self.selected_ver, self.mc_dir, callback=self.callback)
-
-                data["selected-version"] = "Fabric:" + " " + f"{self.selected_ver}"
+                data["selected-version"] = "Forge:" + " " + f"{self.selected_ver}"
                 with open("settings.json", "w") as f:
                     json.dump(data, f, indent=4)
                     f.close()
@@ -1675,8 +1744,20 @@ class Pycraft():
 
                 self.l5.config(text=self.selected_version, font=self.custom_font, fg="#15d38f", bg="#23272a")
 
-            except:
-                showerror(title="Error", message="Errors encountered while installing...")
+        elif self.dl_opt == "Fabric":
+            self.selected_ver = self.frversionsList.get()
+
+            showinfo(title="Installation started..", message=f"Installing fabric version {self.selected_ver}")
+            install_fabric(self.selected_ver, self.mc_dir, callback=self.callback)
+
+            data["selected-version"] = "Fabric:" + " " + f"{self.selected_ver}"
+            with open("settings.json", "w") as f:
+                json.dump(data, f, indent=4)
+                f.close()
+
+            self.selected_version = data["selected-version"]
+
+            self.l5.config(text=self.selected_version, font=self.custom_font, fg="#15d38f", bg="#23272a")
 
         
         elif self.dl_opt == "Ares Client":
@@ -1699,23 +1780,6 @@ class Pycraft():
             except:
                 showerror(title="Error", message="Errors encountered while downloading....")
                 
-        
-            
-
-    def config_window(self):
-        '''A small hack to prevent messing up of the canvas in the settings window.'''
-        if self.os_name.startswith("Linux"):
-            with open("settings.sh", "w") as f:
-                f.write("python3 setting_window.py")
-                f.close()
-            os.system("chmod 700 settings.sh")
-            os.system("./settings.sh")
-        elif self.os_name.startswith("Windows"):
-            with open("settings.bat", "w") as f:
-                f.write("python setting_window.py")
-                f.close()
-            os.system("settings.bat")
-
 
     def save_version(self):
         self.dl_opt = self.download_options.get()
@@ -1855,7 +1919,7 @@ class Pycraft():
 
         self.p2 = tk.Toplevel()
         self.p2.title("Account Window")
-        self.p2.geometry("800x600")
+        self.p2.geometry("800x450")
 
         self.p2.configure(bg = "#23272a")
         self.p2.resizable(False,False)
@@ -1870,11 +1934,17 @@ class Pycraft():
         self.canvas3.place(x = 0, y = 0)
 
         
+        self.background_img1 = PhotoImage(file = f"img/bg2.png")
+        self.background1 = self.canvas3.create_image(
+            400, 225,
+            image=self.background_img1)
+
+        
         self.canvas3.create_text(
             60, 380,
             text = "Accounts",
-            fill = "cyan1",
-            font = ("Sunshiney", int(16.0)))
+            fill = "black",
+            font = ("Sunshiney", int(16.0), "bold"))
 
         if connected == True:
 
@@ -1904,16 +1974,12 @@ class Pycraft():
             
 
 
-        self.background_img1 = PhotoImage(file = f"img/bg2.png")
-        self.background1 = self.canvas3.create_image(
-            410.5, 178.0,
-            image=self.background_img1)
 
 
-        self.entry0_img = PhotoImage(file = f"img/img_textBox0.png")
+        '''self.entry0_img = PhotoImage(file = f"img/img_textBox0.png")
         self.entry0_bg = self.canvas3.create_image(
             400, 442,
-            image = self.entry0_img)
+            image = self.entry0_img)'''
 
         self.entry0 = Entry(
             self.p2,
@@ -1925,18 +1991,20 @@ class Pycraft():
         self.entry0.insert(0, f"{username}")
 
         self.entry0.place(
-            x = 300, y = 410,
-            width = 197.0,
-            height = 66)
+            x = 260, y = 410,
+            width = 250,
+            height = 33)
 
         self.canvas3.create_text(
             360, 380.0,
             text = "Username",
-            fill = "cyan1",
-            font = ("Sunshiney", int(16.0)))
+            fill = "black",
+            font = ("Sunshiney", int(16.0), "bold"))
 
-        self.b11 = Button(self.p2, text="Save", height=2, width=5, command=self.save_acc, foreground="#15d38f", background="#23272a")
+        self.b11 = Button(self.p2, text="Save", command=self.save_acc, bootstyle="success-outline")
         self.b11.place(x=540, y=410)
+
+
 
     def confirm(self):
         self.pwd1 = self.entry1.get()
@@ -1947,13 +2015,13 @@ class Pycraft():
     def password_window(self):
         self.p3 = tk.Toplevel()
         self.p3.title("Enter Password")
-        self.p3.geometry("800x200")
+        self.p3.geometry("600x200")
 
-        self.p3.configure(bg = "#23272a")
+        self.p3.configure(bg="white")
         self.p3.resizable(False,False)
         self.canvas4 = Canvas(
             self.p3,
-            bg = "#23272a",
+            bg = "white",
             height = 200,
             width = 800,
             bd = 0,
@@ -1961,13 +2029,13 @@ class Pycraft():
             relief = "ridge")
         self.canvas4.place(x = 0, y = 0)
 
-        self.entry1_img = PhotoImage(file = f"img/img_textBox1.png")
+        '''self.entry1_img = PhotoImage(file = f"img/img_textBox1.png")
         self.entry1_bg = self.canvas4.create_image(
             230, 92,
-            image = self.entry1_img)
+            image = self.entry1_img)'''
 
         self.entry1 = Entry(
-            self.p3,
+            self.canvas4,
             bd = 0,
             bg = "#c4c4c4",
             show = ".",
@@ -1978,20 +2046,20 @@ class Pycraft():
         self.canvas4.create_text(
             60, 80,
             text = "Password: ",
-            fill = "cyan1",
-            font = ("Sunshiney", int(16.0)))
+            fill = "black",
+            font = ("Galiver Sans", int(16.0)))
 
         self.entry1.place(
             x = 135, y = 60 ,
-            width = 197.0,
-            height = 66)
+            width = 300,
+            height = 36)
 
 
-        self.l6 = tk.Label(self.p3, text="Please enter your password to play. It won't be saved.", font=self.custom_font, foreground="#15d38f", background="#23272a")
-        self.l6.place(x=30, y=135)
+        self.l6 = tk.Label(self.canvas4, text="Please enter your password to play. It won't be saved.", font=Font(family="Galiver Sans", size=16), foreground="#15d38f", background="#23272a")
+        self.l6.place(x=20, y=135)
 
-        self.b12 = Button(self.p3, text="Confirm", command=self.confirm,  foreground="#15d38f", background="#23272a")
-        self.b12.place(x=435,y=92)
+        self.b12 = Button(self.canvas4, text="Confirm", command=self.confirm, bootstyle="warning-outline")
+        self.b12.place(x=500,y=62)
 
 
         
@@ -2009,6 +2077,8 @@ class Pycraft():
                         self.p1.deiconify()
                         self.window.deiconify()
                         self.pw.destroy()
+
+
                 except tk.TclError:
                     print("Download window closed.")
             elif res == "no":
@@ -2070,7 +2140,6 @@ class Pycraft():
         
     def stop_download(self):
         '''restores the minimized original window and cancels the download.'''
-        self.pb.stop()
         self.window.deiconify()
         self.pw.destroy()
         print("Download terminated")

@@ -27,6 +27,10 @@
   > Fps boost is still(sadly) in beta testing mode.
   > 
   > Fixed the download window.
+  > 
+  > There is a font folder now containing all fonts the launcher uses. There is no copyright on these fonts, and can be used anywhere. Users are needed
+  > to install these fonts or else the launcher will look trash.
+  > 
 
 # Planned Updates
 

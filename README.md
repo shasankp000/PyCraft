@@ -12,7 +12,10 @@
 
 # Changelog
 
-  ![Home Page](https://github.com/shasankp000/PyCraft/tree/main/img/pycraft1.png)
+  ![Home Tab](img/pycraft1.png)
+  ![Installations Tab](img/pycraft2.png)
+  ![Settings Tab](img/pycraft3.png)
+  ![Additional Settings Tab](img/pycraft4.png)
 
 
   >v1.04-beta-2 

@@ -37,6 +37,8 @@
   > There is a font folder now containing all fonts the launcher uses. There is no copyright on these fonts, and can be used anywhere. Users are needed
   > to install these fonts or else the launcher will look trash.
   > 
+  > Added a "Bypass Ram limiter" option which will override Pycraft's defualt settings to allocate only upto 50% of system ram to minecraft. With this
+  > option enabled people can set ram more than 50% of the total ram, if needed. 
 
 # Planned Updates
 

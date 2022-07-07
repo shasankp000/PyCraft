@@ -72,9 +72,9 @@
 # Features
   >This launcher is based on the Tkinter and minecraft_launcher_lib. It offers mojang login and cracked login.
   
-  >Includes a special FPS boost option.
+  >Includes a special FPS boost option(old releases).
   
-  >Includes an in-built toggleable vpn, running through torsocks(Linux)
+  >Includes an in-built toggleable vpn, running through torsocks(Linux) (old releases)
   
   >To run Tor on windows as a service : https://deepdarkweb.github.io/how-to-install-tor-on-windows-without-the-tor-browser-running-tutorial/
 

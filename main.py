@@ -1,5 +1,6 @@
 from tkinter import Canvas, PhotoImage, Entry, Tk, StringVar, DoubleVar
 from tkinter import Button as Button1
+from tkinter import Label as Label1
 from tkinter.font import Font
 
 import tkinter as tk
@@ -19,21 +20,30 @@ import json
 import sys
 from threading import Thread
 import time
-from time import mktime
 import requests
-from speedtracker import SpeedTracker 
+from speedtracker import SpeedTracker
 import wget
-import zipfile 
+from zipfile import ZipFile
 from shutil import move
 import psutil
+
+
+print("Starting PyCraft Launcher v1.04, please wait......")
+time.sleep(5)
+
 
 style = Style(theme="flatly") #Sets the theme of the comboboxes and progressbar. Cosmo is a light-blue theme
 style.configure("TNotebook.Tab", foreground="#15d38f", background="#23272a", bordercolor="#072A6C")
 #style.theme_create("custom.TNotebook", foreground="#15d38f", background="#23272a", bordercolor="#072A6C")
 
-'''def get_size(bytes, suffix="B"):
+currn_dir = os.getcwd()
+mc_dir = r"{}/.minecraft".format(currn_dir)
+OS = platform.platform()
+
+
+def get_size(bytes, suffix="B"):
     #Found this on some website, i don't remember now. Used to get the total ram in GB.
-    """ 
+    """
     Scale bytes to its proper format
     e.g:
         1253656 => '1.20MB'
@@ -49,39 +59,77 @@ style.configure("TNotebook.Tab", foreground="#15d38f", background="#23272a", bor
 svmem = psutil.virtual_memory()
 
 
-
-
-
 #Generates the settings.json file which is afterwards read by the settings window. Very important for the program to run
+if OS.startswith("Linux"):
 
-settings = {
-            "User-info" : [
-                {
-                    "username": None,
-                    "password": None,
-                    "AUTH_TYPE": None,
-                }
-            ],
-            "PC-info" : [
-                {
-                    "OS": platform.platform(),
-                    "Total-Ram": f"{get_size(svmem.total)}",
-                }
-            ],
-            "Minecraft-home" : mc_dir,
-            "Show-Snapshots" : False,
-            "Fps-Boost" : False,
-            "Tor-Enabled" : False,
-            "setting-info" : [
-                {
-                    "snap_selected" : False,
-                    "fps_boost_selected" : False,
-                    "tor_enabled_selected" : False,
-                    "allocated_ram_selected" : None
-                }
-            ],
-            "allocated-ram" : None
-        }
+    settings = {
+                "accessToken": None,
+                "clientToken": None,
+                "User-info" : [
+                    {
+                        "username": None,
+                        "AUTH_TYPE": None,
+                        "UUID": None
+                    }
+                ],
+                "PC-info" : [
+                    {
+                        "OS": platform.platform(),
+                        "Total-Ram": f"{get_size(svmem.total)}",
+                    }
+                ],
+                "Minecraft-home" : mc_dir,
+                "selected-version": None,
+                "Fps-Boost" : False,
+                "Tor-Enabled" : False,
+                "setting-info" : [
+                    {
+                        "fps_boost_selected" : False,
+                        "tor_enabled_selected" : False,
+                        "allocated_ram_selected" : None,
+                    }
+                ],
+                "allocated_ram" : None,
+                "jvm-args": None,
+                "executablePath": "java",
+                "ramlimiterExceptionBypassed": False,
+                "ramlimiterExceptionBypassedSelected": False
+                #"executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir)
+            }
+
+elif OS.startswith("Windows"):
+    settings = {
+                "accessToken": None,
+                "clientToken": None,
+                "User-info" : [
+                    {
+                        "username": None,
+                        "AUTH_TYPE": None,
+                        "UUID": None
+                    }
+                ],
+                "PC-info" : [
+                    {
+                        "OS": platform.platform(),
+                        "Total-Ram": f"{get_size(svmem.total)}",
+                    }
+                ],
+                "Minecraft-home" : mc_dir,
+                "selected-version": None,
+                "Tor-Enabled" : False,
+                "setting-info" : [
+                    {
+                        "tor_enabled_selected" : False,
+                        "allocated_ram_selected" : None
+                    }
+                ],
+                "allocated_ram" : None,
+                "jvm-args": None,
+                "executablePath": r"C:\\Program Files\\BellSoft\\LibericaJDK-17\\bin\\java",
+                "ramlimiterExceptionBypassed": False,
+                "ramlimiterExceptionBypassedSelected": False
+                #"executablePath": r"{}/runtime/jre-legacy/windows/jre-legacy/bin/java".format(mc_dir)
+            }
 
 
 if not os.path.exists(r"{}/settings.json".format(currn_dir)):
@@ -89,11 +137,9 @@ if not os.path.exists(r"{}/settings.json".format(currn_dir)):
         json.dump(settings, js_set, indent=4)
         js_set.close()
 else:
-    pass'''
+    pass
 
 
-currn_dir = os.getcwd()
-mc_dir = r"{}/.minecraft".format(currn_dir)
 
 with open("settings.json", "r") as js_read:
     s = js_read.read()
@@ -113,9 +159,7 @@ mc_dir = data["Minecraft-home"]
 auth_type = data["User-info"][0]["AUTH_TYPE"]
 jvm_args = data["jvm-args"]
 selected_ver = data["selected-version"]
-fps_boost = data["Fps-Boost"]
 tor_enabled = data["Tor-Enabled"]
-fps_boost_selected = data["setting-info"][0]["fps_boost_selected"]
 tor_enabled_selected = data["setting-info"][0]["tor_enabled_selected"]
 allocated_ram = data["allocated_ram"]
 allocated_ram_selected = data["setting-info"][0]["allocated_ram_selected"]
@@ -123,7 +167,15 @@ ramlimiterExceptionBypassed = data["ramlimiterExceptionBypassed"]
 ramlimiterExceptionBypassedSelected = data["ramlimiterExceptionBypassedSelected"]
 
 
-print(os_name)
+
+
+
+
+
+
+
+print(OS)
+
 
 
 
@@ -139,14 +191,15 @@ connected = True
 
 def check_internet(url='https://www.google.com', timeout=5):
     global connected
-    '''Checks internet connection at startup'''
+    #Checks internet connection at startup
     try:
         r2 = requests.head(url, timeout=timeout)
+        print("Connected to the Internet")
         return True
     except requests.ConnectionError:
         connected = False
         print("No internet connection available.")
-        
+        Pycraft()
 
 
 
@@ -169,6 +222,8 @@ class Pycraft():
     global selected_ver
     global ramlimiterExceptionBypassed
     global ramlimiterExceptionBypassedSelected
+    global auth_type
+    global jvm_args
 
 
     print("**IMPORTANT**")
@@ -180,12 +235,21 @@ class Pycraft():
     global data
 
     def __init__(self):
-        
+        '''try:
+            self.r2 = requests.head("https://www.google.com", timeout=5)
+            return True
+        except requests.ConnectionError:
+            connected = False
+            print("No internet connection available.")'''
+
+
+
         self.custom_font = Font(family="Galiver Sans", size=26)
+        self.custom_font1 = Font(family="Galiver Sans", size=14)
         self.custom_font2 = Font(family="Galiver Sans", size=26)
-        self.custom_font3 = Font(family="Galiver Sans", size=16, )
+        self.custom_font3 = Font(family="Galiver Sans", size=16)
         self.custom_font4 = Font(family="Galiver Sans", size=12)
-        
+
 
 
         self.os_name = data["PC-info"][0]["OS"]
@@ -194,7 +258,7 @@ class Pycraft():
         self.mc_dir = data["Minecraft-home"]'''
 
         self.window = style.master
-        
+
         self.Tk_Width = 1270
         self.Tk_Height = 736
 
@@ -203,14 +267,14 @@ class Pycraft():
         self.window.configure(bg="#23272a")
 
         if os_name.startswith("Windows"):
-            self.window.iconbitmap("icon.ico")
+            self.window.iconbitmap(r"{}/icon.ico".format(currn_dir))
 
         self.x_Left = int(self.window.winfo_screenwidth()/2 - self.Tk_Width/2)
         self.y_Top = int(self.window.winfo_screenheight()/2 - self.Tk_Height/2)
 
         self.window.geometry(f"+{self.x_Left}+{self.y_Top}")
 
-        
+
         self.canvas4 = Canvas(
             self.window,
             bg = "#23272a",
@@ -247,9 +311,9 @@ class Pycraft():
 
         self.img9 = PhotoImage(file = f"img/img9.png")
         self.b9 = Button(
-            self.p1, 
-            text="Download", 
-            #height=2, 
+            self.p1,
+            text="Download",
+            #height=2,
             #width=10,
             #background="green",
             #foreground="black",
@@ -263,11 +327,11 @@ class Pycraft():
             height = 48)
 
         self.b10 = Button(
-            self.p1, 
-            text="Select version", 
-            #height=2, 
-            #width=20,  
-            command=self.save_version, 
+            self.p1,
+            text="Select version",
+            #height=2,
+            #width=20,
+            command=self.save_version,
             #background="green",
             #foreground="black",
             #relief="flat",
@@ -327,7 +391,7 @@ class Pycraft():
             self.forge_versions = []
 
             self.versions = []
-                
+
             self.fabric_versions = []
 
             self.fpsversions = []
@@ -376,7 +440,7 @@ class Pycraft():
             self.fpsversionsList["state"] = "readonly"
             self.fpsversionsList.current(0)
 
-                
+
             self.canvas2.create_text(
                 680, 50.0,
                 text = "Forge Versions",
@@ -413,57 +477,57 @@ class Pycraft():
             self.p1.pack(fill='both', expand=True)
 
 
-            
 
-            self.canvas = Canvas(
-                self.frame1,
-                bg = "#23272a",
-                height = 720,
-                width = 1024,
-                bd = 0,
-                highlightthickness = 0,
-                relief = "ridge")
-            self.canvas.place(x = 0, y = 0)
 
-            self.background_img = PhotoImage(file = f"img/bg.png")
-            self.background = self.canvas.create_image(
-                505,280,
-                image=self.background_img)
+        self.canvas = Canvas(
+            self.frame1,
+            bg = "#23272a",
+            height = 720,
+            width = 1024,
+            bd = 0,
+            highlightthickness = 0,
+            relief = "ridge")
+        self.canvas.place(x = 0, y = 0)
 
-            self.canvas.create_text(
-                500,150,
-                text = "Pycraft Launcher",
-                fill = "black",
-                font = ("Minecraft", int(36.0))
-            )
+        self.background_img = PhotoImage(file = f"img/bg.png")
+        self.background = self.canvas.create_image(
+            505,280,
+            image=self.background_img)
+
+        self.canvas.create_text(
+            500,150,
+            text = "Pycraft Launcher",
+            fill = "black",
+            font = ("Minecraft", int(36.0))
+        )
 
 
             #self.img3 = PhotoImage(file = f"img/img4.png")
-            self.b3 = Button(
-                self.frame1,
-                #image = self.img3,
-                text = f'{selected_ver}\n' + 'Ready to Play',
-                #background="green",
-                #foreground="black",
-                #height=20,
-                #width=20,
-                command=self.password_window,
-                bootstyle="success-outline")
+        self.b3 = Button(
+            self.frame1,
+            #image = self.img3,
+            text = f'{selected_ver}\n' + 'Ready to Play',
+            #background="green",
+            #foreground="black",
+            #height=20,
+            #width=20,
+            command=self.password_window,
+            bootstyle="success-outline")
 
-            if connected == True:
+        if connected == True:
 
-                self.b3.place(
-                    x = 340, y = 420,
-                    width = 249,
-                    height = 60)
-
-
-            elif connected == False:
-                self.b3.place(
+            self.b3.place(
                 x = 340, y = 420,
                 width = 249,
                 height = 60)
-                
+
+
+        elif connected == False:
+            self.b3.place(
+            x = 340, y = 420,
+            width = 249,
+            height = 60)
+
 
 
 
@@ -498,53 +562,53 @@ class Pycraft():
 
 
 
-            self.img10 = PhotoImage(file = f"img/img10.png")
-            self.b10 = Button1(
-                self.frame1,
-                image = self.img10,
-                borderwidth = 0,
-                highlightthickness = 0,
-                command=self.profile_window,
-                relief = "flat")
+        self.img10 = PhotoImage(file = f"img/img10.png")
+        self.b10 = Button1(
+            self.frame1,
+            image = self.img10,
+            borderwidth = 0,
+            highlightthickness = 0,
+            command=self.profile_window,
+            relief = "flat")
 
-            self.b10.place(
-                x = 1, y = 0,
-                width = 89,
-                height = 87)
+        self.b10.place(
+            x = 1, y = 0,
+            width = 89,
+            height = 87)
 
-            self.l3 = Label(self.frame1)
-            self.l3.place(x=110, y=30)
+        self.l3 = Label(self.frame1)
+        self.l3.place(x=110, y=30)
 
-            self.l4 = Label(self.frame1)
-            self.l4.place(x=113, y=64)
+        self.l4 = Label(self.frame1)
+        self.l4.place(x=113, y=64)
 
 
-            if connected == True:
+        if connected == True:
 
-                self.l3.config(text=data["User-info"][0]["username"], font=self.custom_font3, foreground="black", background="#C9CDEC")
+            self.l3.config(text=data["User-info"][0]["username"], font=self.custom_font3, foreground="black", background="#C9CDEC")
 
-                self.custom_font1 = Font(family="Galiver Sans", size=14)
-                
-                self.acc_method = data["User-info"][0]["AUTH_TYPE"]
+            self.custom_font1 = Font(family="Galiver Sans", size=14)
 
-                if self.acc_method == "mojang login":
-                    self.l4.config(text="mojang account", font=self.custom_font1, foreground="black", background="#C9CDEC")
-                elif self.acc_method == "ely_by login":
-                    self.l4.config(text="ely.by account", font=self.custom_font1, foreground="black", background="#C9CDEC")
-                elif self.acc_method == "cracked login":
-                    self.l4.config(text="no account", font=self.custom_font1, foreground="black", background="#C9CDEC")
-            
-            elif connected == False:
+            self.acc_method = data["User-info"][0]["AUTH_TYPE"]
 
-                with open("settings.json", "w") as f:
-                    json.dump(data, f, indent=4)
-                    f.close()
+            if self.acc_method == "mojang login":
+                self.l4.config(text="mojang account", font=self.custom_font1, foreground="black", background="#C9CDEC")
+            elif self.acc_method == "ely_by login":
+                self.l4.config(text="ely.by account", font=self.custom_font1, foreground="black", background="#C9CDEC")
+            elif self.acc_method == "cracked login":
+                self.l4.config(text="no account", font=self.custom_font1, foreground="black", background="#C9CDEC")
 
-                self.l3.config(text=data["User-info"][0]["username"], font=self.custom_font3, foreground="#15d38f", background="#C9CDEC")
+        elif connected == False:
 
-                self.custom_font1 = Font(family="Galiver Sans", size=14)
+            with open("settings.json", "w") as f:
+                json.dump(data, f, indent=4)
+                f.close()
 
-                self.l4.config(text="User is offline", font=self.custom_font1, foreground="#15d38f", background="#C9CDEC")
+            self.l3.config(text=data["User-info"][0]["username"], font=self.custom_font3, foreground="black", background="#C9CDEC")
+
+            self.custom_font1 = Font(family="Galiver Sans", size=14)
+
+            self.l4.config(text="User is offline", font=self.custom_font1, foreground="black", background="#C9CDEC")
 
             '''
 
@@ -560,182 +624,157 @@ class Pycraft():
                 fill = "#15d38f",
                 font = ("Sunshiney", int(26.0)))'''
 
-            self.canvas.create_text(
-                70, 550,
-                text = "v1.04-beta-2",
-                fill = "#000000",
-                font = ("Galiver Sans", int(16.0)))
+        self.canvas.create_text(
+            70, 550,
+            text = "v1.04-beta-2",
+            fill = "#000000",
+            font = ("Galiver Sans", int(16.0)))
 
-            if connected == False:
-                showinfo(title="No internet access.", message="You are offline!\n You won't have access to the following features: \n Skins System \n Downloads \n Ely.by accounts.")
-            
-
-
-            self.mc_dir = r"{}/.minecraft".format(currn_dir)
-
-            
-            #global variables
-            self.cb1 = ""
-            self.cb2 = ""
-            self.s1 = ""
-
-            self.current_value = DoubleVar()
-            
-
-            #Small hack for remembering settings in the gui
-            
-
-            if tor_enabled_selected == True:
-                self.cb2 = StringVar(value="selected")
-            else:
-                cb2 = StringVar(value="deselected")
+        if connected == False:
+            showinfo(title="No internet access.", message="You are offline!\n You won't have access to the following features: \n Skins System \n Downloads \n Ely.by accounts.")
 
 
 
-
-            self.window_s = Frame(self.nb)
-            
-            self.svmem = psutil.virtual_memory()
+        self.mc_dir = r"{}/.minecraft".format(currn_dir)
 
 
-        
+        #global variables
+        self.cb1 = ""
+        self.cb2 = ""
+        self.s1 = ""
+
+        self.current_value = DoubleVar()
 
 
-            self.canvas5 = Canvas(
-                self.window_s,
-                bg = "#23272a",
-                height = 720,
-                width = 1024,
-                bd = 0,
-                highlightthickness = 0,
-                relief = "ridge")
-            self.canvas5.place(x = 3, y = 0)
+        #Small hack for remembering settings in the gui
 
-            self.value_label = Label(
+
+        if tor_enabled_selected == True:
+            self.cb2 = StringVar(value="selected")
+        else:
+            cb2 = StringVar(value="deselected")
+
+
+
+
+        self.window_s = Frame(self.nb)
+
+        self.svmem = psutil.virtual_memory()
+
+
+
+
+
+        self.canvas5 = Canvas(
+            self.window_s,
+            bg = "#23272a",
+            height = 720,
+            width = 1024,
+            bd = 0,
+            highlightthickness = 0,
+            relief = "ridge")
+        self.canvas5.place(x = 3, y = 0)
+
+        self.value_label = Label(
+        self.canvas5,
+        text=self.get_current_value(),
+        foreground="#15d38f",
+        style = "info.TLabel",
+        background='#23272a'
+        )
+
+        self.value_label.place(x=270, y=530)
+
+
+        self.background_img3 = PhotoImage(file = f"img/bg.png")
+        self.background3 = self.canvas5.create_image(
+                500.0, 280.0,
+                image=self.background_img3)
+
+        self.canvas5.create_text(
+            539.5, 45.5,
+            text = "SETTINGS",
+            fill = "black",
+            font = ("Galiver Sans", int(20.0), "bold"))
+
+
+        self.current_value_label = Label(
             self.canvas5,
-            text=self.get_current_value(),
-            foreground="#15d38f",
+            text='Ram Assigned:',
             style = "info.TLabel",
-            background='#23272a'
-            )
+            background='#23272a',
+            foreground="#15d38f"
+        )
 
-            self.value_label.place(x=270, y=530)
- 
-
-            self.background_img3 = PhotoImage(file = f"img/bg.png")
-            self.background3 = self.canvas5.create_image(
-                    500.0, 280.0,
-                    image=self.background_img3)
-
-            self.canvas5.create_text(
-                539.5, 45.5,
-                text = "SETTINGS",
-                fill = "black",
-                font = ("Galiver Sans", int(20.0), "bold"))
-
-            '''self.canvas5.create_text(
-                562.0, 619.0,
-                text = "Network Settings",
-                fill = "#000000",
-                font = ("Sunshiney", int(20.0)))
+        self.current_value_label.place(x=270, y=530)
 
 
 
 
-            self.sn1 = Checkbutton(self.window_s, style="info.Roundtoggle.Toolbutton", onvalue="selected", offvalue="deselected", command=self.check2, variable=self.cb1)
-            self.sn1.place(x=500, y=135.0)'
 
-            self.sn2 = Checkbutton(self.window_s, style="info.Roundtoggle.Toolbutton", onvalue="selected", offvalue="deselected", command=self.check3, variable=self.cb2)
-            self.sn2.place(x=500, y=680.0)'''
+        self.canvas5.create_text(
+            230, 225,
+            text = "Minecraft Directory(requires to relaunch)",
+            fill = "yellow",
+            font = ("Galiver Sans", int(17.0), "bold"))
 
-            self.current_value_label = Label(
-                self.canvas5,
-                text='Ram Assigned:',
-                style = "info.TLabel",
-                background='#23272a',
-                foreground="#15d38f"
-            )
+        self.canvas5.create_text(
+            240.5, 478.0,
+            text = "JVM Memory Allocation(requires to relaunch)",
+            fill = "yellow",
+            font = ("Galiver Sans", int(16.0), "bold"))
 
-            self.current_value_label.place(x=270, y=530)
+        self.canvas5.create_text(
+            539.5, 430,
+            text = "Minecraft-Settings",
+            fill = "yellow",
+            font = ("Galiver Sans", int(20.0), "bold"))
 
+        self.str_ram = data["PC-info"][0]["Total-Ram"].strip("    GB")
+        self.ram = float(self.str_ram)
+        self.med_ram = (self.ram*1000)/2
 
+        self.slider = Scale(
+            self.window_s,
+            from_=128,
+            to=self.ram*1000,
+            command=self.slider_changed,
+            style="info.Horizontal.TScale",
+            variable=self.current_value,
+            length = "1000"
+        )
 
-
-            '''self.canvas5.create_text(
-                152.5, 146.0,
-                text = "FPS Boost(experimental - Requires relaunch)",
-                fill = "#000000",
-                font = ("Sushiney", int(10.0)))'''
-
-            '''self.canvas5.create_text(
-                231.5, 694.0,
-                text = "Enable Tor(requires to relaunch)",
-                fill = "#000000",
-                font = ("Sunshiney", int(16.0)))'''
-
-            self.canvas5.create_text(
-                230, 225,
-                text = "Minecraft Directory(requires to relaunch)",
-                fill = "yellow",
-                font = ("Galiver Sans", int(17.0), "bold"))
-
-            self.canvas5.create_text(
-                240.5, 478.0,
-                text = "JVM Memory Allocation(requires to relaunch)",
-                fill = "yellow",
-                font = ("Galiver Sans", int(16.0), "bold"))
-
-            self.canvas5.create_text(
-                539.5, 430,
-                text = "Minecraft-Settings",
-                fill = "yellow",
-                font = ("Galiver Sans", int(20.0), "bold"))
-
-            self.str_ram = data["PC-info"][0]["Total-Ram"].strip("    GB")
-            self.ram = float(self.str_ram)
-            self.med_ram = (self.ram*1000)/2
-
-            self.slider = Scale(
-                self.window_s,
-                from_=128,
-                to=self.ram*1000,
-                command=self.slider_changed,
-                style="info.Horizontal.TScale",
-                variable=self.current_value, 
-                length = "1000"
-            )
-
-            self.slider.place(x=5, y=500)
+        self.slider.place(x=5, y=500)
 
 
-            #Very important system check.
+        #Very important system check.
 
+        self.first_time_run = True
+
+        if allocated_ram and allocated_ram_selected == None:
+            #slider.set(allocated_ram_selected)
             self.first_time_run = True
-
-            if allocated_ram and allocated_ram_selected == None:
-                #slider.set(allocated_ram_selected)
-                self.first_time_run = True
-                print(self.first_time_run)
-            elif allocated_ram and allocated_ram_selected != None:
-                self.slider.set(allocated_ram)
-                self.current_value_label.config(text=f"Ram Assigned: {allocated_ram}", font=self.custom_font4)
-                self.first_time_run = False
-                print(self.first_time_run)
+            print(self.first_time_run)
+        elif allocated_ram and allocated_ram_selected != None:
+            self.slider.set(allocated_ram)
+            self.current_value_label.config(text=f"Ram Assigned: {allocated_ram}", font=self.custom_font4)
+            self.first_time_run = False
+            print(self.first_time_run)
 
 
 
 
 
-            self.l3 = Label(
-                self.window_s,
-                text=f"Total : {self.ram*1000} MB",
-                style = "info.TLabel",
-                background='#000000',
-                foreground="#15d38f",
-                font=self.custom_font4
-            )
+        self.l3 = Label(
+            self.window_s,
+            text=f"Total : {self.ram*1000} MB",
+            style = "info.TLabel",
+            background='#000000',
+            foreground="#15d38f",
+            font=self.custom_font4
+        )
 
-            self.l3.place(x=460, y=530)
+        self.l3.place(x=460, y=530)
 
 
             #self.entry0_img = PhotoImage(file = f"img/img_textBox3.png")
@@ -743,96 +782,137 @@ class Pycraft():
             #    333.5, 297.0,
             #    image = self.entry0_img)
 
-            self.entry0 = Entry(
-                self.window_s,
-                bd = 0,
-                bg = "#c4c4c4",
-                font = ("Sunshiney", 20),
-                highlightthickness = 0)
+        self.entry0 = Entry(
+            self.window_s,
+            bd = 0,
+            bg = "#c4c4c4",
+            font = ("Sunshiney", 20),
+            highlightthickness = 0)
 
-            self.entry0.insert(0, f"{mc_home}")
+        self.entry0.insert(0, f"{mc_home}")
 
-            self.curn_path = self.entry0.get()
+        self.curn_path = self.entry0.get()
 
-            self.entry0.place(
-                x = 10.0, y = 267.0,
-                width = 547.0,
-                height = 62)
+        self.entry0.place(
+            x = 10.0, y = 267.0,
+            width = 547.0,
+            height = 62)
 
-            self.b7 = Button(
-                self.canvas5,
-                text="Save",
-                command = self.save,
-                bootstyle="success-outline")
+        self.b7 = Button(
+            self.canvas5,
+            text="Save",
+            command = self.save,
+            bootstyle="success-outline")
 
-            self.b7.place(
-                x = 790, y = 267,
-                width = 119,
-                height = 60)
+        self.b7.place(
+            x = 790, y = 267,
+            width = 119,
+            height = 60)
 
-            self.b15 = Button(
-                self.canvas5,
-                text="Save",
-                command = self.save_ram,
-                bootstyle="danger-outline")
+        self.b15 = Button(
+            self.canvas5,
+            text="Save",
+            command = self.save_ram,
+            bootstyle="danger-outline")
 
-            self.b15.place(
-                x = 790, y = 520,
-                width = 120,
-                height = 40)
-
-
-            self.flt_s1 = ""
-            self.s1 = ""
-            self.flt_s2 = ""
-            self.s2 = ""
-
-            self.window_t = Frame(self.nb)
-
-            self.canvas6 = Canvas(
-                self.window_t,
-                bg = "#23272a",
-                height = 720,
-                width = 1024,
-                bd = 0,
-                highlightthickness = 0,
-                relief = "ridge")
-            self.canvas6.place(x = 3, y = 0)
+        self.b15.place(
+            x = 790, y = 520,
+            width = 120,
+            height = 40)
 
 
-            self.background_img4 = PhotoImage(file = f"img/bg.png")
-            self.background4 = self.canvas6.create_image(
-                    500.0, 280.0,
-                    image=self.background_img4)
+        self.flt_s1 = ""
+        self.s1 = ""
+        self.flt_s2 = ""
+        self.s2 = ""
 
-            self.canvas6.create_text(
-                220.0, 55.0,
-                text = "Bypass ram limiter",
-                fill = "#000000",
-                font = ("Galiver Sans", int(20.0), "bold"))
+        self.window_t = Frame(self.nb)
+
+        self.canvas6 = Canvas(
+            self.window_t,
+            bg = "#23272a",
+            height = 720,
+            width = 1024,
+            bd = 0,
+            highlightthickness = 0,
+            relief = "ridge")
+        self.canvas6.place(x = 3, y = 0)
 
 
-            if ramlimiterExceptionBypassedSelected== True:
-                self.cb1 = StringVar(value="selected")
-            else:
-                self.cb1 = StringVar(value="deselected")
-
-
-            self.sn1 = Checkbutton(self.window_t, bootstyle="success-square-toggle", onvalue="selected", offvalue="deselected", command=self.check2, variable=self.cb1)
-            self.sn1.place(x=600, y=55.0)
+        self.background_img4 = PhotoImage(file = f"img/bg.png")
+        self.background4 = self.canvas6.create_image(
+                500.0, 280.0,
+                image=self.background_img4)
 
 
 
-            
-            self.nb.add(self.frame1, text="Home")
-            self.nb.add(self.p1, text="Installations")
-            self.nb.add(self.window_s, text="Settings")
-            self.nb.add(self.window_t, text="Additional Settings")
+        self.canvas6.create_text(
+            220.0, 55.0,
+            text = "Bypass ram limiter",
+            fill = "#000000",
+            font = ("Galiver Sans", int(20.0), "bold"))
 
-            self.window.resizable(False, False)
-            self.window.mainloop()
 
-            
+        self.canvas6.create_text(
+            220.0, 115.0,
+            text = "Jvm arguments",
+            fill = "#000000",
+            font = ("Galiver Sans", int(20.0), "bold"))
+
+
+        self.entry2 = Entry(
+            self.window_t,
+            bd = 0,
+            bg = "#c4c4c4",
+            font = ("Sunshiney", 20),
+            highlightthickness = 0)
+
+
+        self.login_method = auth_type
+        
+
+        if self.login_method == "mojang login":
+            self.j1 = jvm_args
+            self.entry2.insert(0, f"{self.j1}")
+
+        elif self.login_method == "ely_by login":
+            self.j2 = jvm_args
+            self.entry2.insert(0, f"{self.j2}")
+
+        elif self.login_method == "cracked login":
+            self.j1 = jvm_args
+            self.entry2.insert(0, f"{self.j1}")
+
+
+        self.entry2.place(
+            x = 120.0, y = 167.0,
+            width = 547.0,
+            height = 62)
+
+
+
+
+        if ramlimiterExceptionBypassedSelected== True:
+            self.cb1 = StringVar(value="selected")
+        else:
+            self.cb1 = StringVar(value="deselected")
+
+
+        self.sn1 = Checkbutton(self.window_t, bootstyle="success-square-toggle", onvalue="selected", offvalue="deselected", command=self.check2, variable=self.cb1)
+        self.sn1.place(x=600, y=55.0)
+
+
+
+
+        self.nb.add(self.frame1, text="Home")
+        self.nb.add(self.p1, text="Installations")
+        self.nb.add(self.window_s, text="Settings")
+        self.nb.add(self.window_t, text="Additional Settings")
+
+        self.window.resizable(False, False)
+        self.window.mainloop()
+
+
     def generate_cracked_uid(self):
 
         if data["User-info"][0]["UUID"] == None:
@@ -844,10 +924,81 @@ class Pycraft():
                         js_set.close()
 
         elif data["User-info"][0]["UUID"] != None:
-            
+
             self.uid = data["User-info"][0]["UUID"]
 
+    '''def splash_screen(self):
+        #Splash Screen for the launcher
+        self.splash_s = style.master
+        self.splash_s.title("Pycraft Loader")
+        self.splash_s.geometry("761x403+140+50")
 
+        self.Tk_Width = 761
+        self.Tk_Height = 403
+
+        self.x_Left = int(self.splash_s.winfo_screenwidth()/2 - self.Tk_Width/2)
+        self.y_Top = int(self.splash_s.winfo_screenheight()/2 - self.Tk_Height/2)
+
+        self.splash_s.geometry(f"+{self.x_Left}+{self.y_Top}")
+
+
+        self.splash_s.resizable(False, False)
+
+
+        self.canvas6 = Canvas(
+            self.splash_s,
+            bg = "#3a3a3a",
+            height = 768,
+            width = 1024,
+            bd = 0,
+            highlightthickness = 0,
+            relief = "ridge")
+        self.canvas6.place(x = 0, y = 0)
+
+        self.background_img6 = PhotoImage(file = "img/mc1.png")
+        self.background6 = self.canvas6.create_image(
+            380.5,201.5,
+            image=self.background_img6)
+
+
+        if not os.path.exists(r"{}/settings.json".format(currn_dir)):
+            sefl.c1 = Label1(
+                    self.splash_s,
+                    text = "Generating settings.....",
+                    font = ("Sunshiney", int(16.0)),
+                    bg="#3a3a3a",
+                    fg="cyan1")
+
+        else:
+            self.c1 = Label1(
+                    self.splash_s,
+                    text = "Reading settings.....",
+                    font = ("Sunshiney", int(16.0)),
+                    bg="#3a3a3a",
+                    fg="cyan1")
+
+        self.c1.place(x=248, y=350)
+
+        self.splash_s.after(10000, lambda: self.c1.configure(text="Getting everything ready...."))
+
+        self.canva6.create_text(
+            400, 200,
+            text = "PyCraft Launcher 1.04",
+            fill = "cyan1",
+            font = ("Galiver Sans", int(26.0)))
+
+
+        self.pb3 = Progressbar(self.splash_s, value=0, style='info.Horizontal.TProgressbar', length=300, mode="indeterminate")
+        self.pb3.place(x=250, y=400)
+
+
+        window_running = True
+        self.pb3.start()
+        self.splash_s.after(20000, lambda: self.pb3.stop())
+        self.splash_s.after(24000, lambda: self.splash_s.withdraw())
+        self.splahs_s.after(30000, lambda: self.splash_s.destroy())
+
+        self.splash_s.mainloop()'''
 
 
 
@@ -873,7 +1024,7 @@ class Pycraft():
             print()
 
 
-  
+
 
 
 
@@ -885,12 +1036,12 @@ class Pycraft():
         if cb1.get() == "selected":
             fps_boost = True
             fps_boost_selected = True
-                    
+
         elif cb1.get() == "deselected":
             fps_boost = False
             fps_boost_selected = False
-                    
-                
+
+
         data["Fps-Boost"] = fps_boost
         data["setting-info"][0]["fps_boost_selected"] = fps_boost_selected
 
@@ -899,20 +1050,20 @@ class Pycraft():
             json.dump(data, js_set, indent=4)
             js_set.close()'''
 
-    
+
     def check2(self):
         global ramlimiterExceptionBypassed
         global ramlimiterExceptionBypassedSelected
         if self.cb1.get() == "selected":
             ramlimiterExceptionBypassed = True
             ramlimiterExceptionBypassedSelected = True
-                            
+
         elif self.cb1.get() == "deselected":
             ramlimiterExceptionBypassed = False
             ramlimiterExceptionBypassedSelected = False
-                    
-                            
-                        
+
+
+
         data["ramlimiterExceptionBypassed"] = ramlimiterExceptionBypassed
         data["ramlimiterExceptionBypassedSelected"] = ramlimiterExceptionBypassedSelected
 
@@ -930,7 +1081,7 @@ class Pycraft():
         if cb2.get() == "selected":
             tor_enabled = True
             tor_enabled_selected = True
-                    
+
         elif cb2.get() == "deselected":
             tor_enabled = False
             tor_enabled_selected = False
@@ -946,7 +1097,7 @@ class Pycraft():
     def save(self):
         '''Saves the minecraft home dir path, which is entered.'''
         global mc_home
-        mc_home = entry0.get()
+        mc_home = self.entry0.get()
         data["Minecraft-home"] = mc_home
 
         with open("settings.json", "w") as js_set:
@@ -962,14 +1113,14 @@ class Pycraft():
     def slider_changed(self, event):
 
         try:
-            self.value_label.configure(text=get_current_value())
-            self.s1 = get_current_value()
-            self.flt_s1 = float(s1.rstrip(" MB"))
+            self.value_label.configure(text=self.get_current_value())
+            self.s1 = self.get_current_value()
+            self.flt_s1 = float(self.s1.rstrip(" MB"))
             #print(s1)
             data["setting-info"][0]["allocated_ram_selected"] = self.flt_s1
         except NameError:
             pass
-                
+
         with open("settings.json", "w") as js_set:
                 json.dump(data, js_set, indent=4)
                 js_set.close()
@@ -990,11 +1141,12 @@ class Pycraft():
 
 
 
-        
+
     def save_ram(self):
         self.s2 = self.get_current_value()
         self.flt_s2 = float(self.s2.rstrip(" MB"))
         data["allocated_ram"] = self.flt_s2
+        data["setting-info"][0]["allocated_ram_selected"] = self.flt_s2
         print("Selected: ", self.flt_s2)
 
         with open("settings.json", "w") as js_set:
@@ -1011,6 +1163,7 @@ class Pycraft():
 
 
                 data["allocated_ram"] = self.flt_s2
+                data["setting-info"][0]["allocated_ram_selected"] = self.flt_s2
                 print("Selected: ", self.flt_s2)
                 print("Changed to: ", self.flt_s2)
 
@@ -1019,10 +1172,11 @@ class Pycraft():
                         js_set.close()
 
             else:
-        
+
                 self.slider.set(self.med_ram)
                 self.current_value_label.config(text=f"Ram Assigned: {self.med_ram} MB", font=self.custom_font4)
                 data["allocated_ram"] = self.med_ram
+                data["setting-info"][0]["allocated_ram_selected"] = self.flt_s2
                 print("Changed to: ", self.med_ram)
 
                 with open("settings.json", "w") as js_set:
@@ -1030,12 +1184,13 @@ class Pycraft():
                         js_set.close()
 
                 showerror(title="Error!", message="Cannot assign more than 50 percent of host OS's ram. This is intended for low end pc(s) to run smoothly.")
-        
+
         elif self.flt_s2<(self.med_ram):
             self.slider.set(self.flt_s2)
             self.current_value_label.config(text=f"Ram Assigned: {self.flt_s2} MB", font=self.custom_font4)
 
             data["allocated_ram"] = self.flt_s2
+            data["setting-info"][0]["allocated_ram_selected"] = self.flt_s2
             print("Changed to: ", self.flt_s2)
 
             with open("settings.json", "w") as js_set:
@@ -1044,13 +1199,13 @@ class Pycraft():
 
             showinfo(title="Done", message=f"Allocated {self.flt_s2} MB of ram")
 
-    def dc_invite(self):
+    '''def dc_invite(self):
         webbrowser.open("https://discord.gg/SsnX8DtPcD")
 
     def git_invite(self):
         webbrowser.open("https://github.com/shasankp000")
 
-    '''def mc_news(self):
+    def mc_news(self):
         webview.create_window('Minecraft Caves and Cliffs update 1.17.1', 'https://www.minecraft.net/en-us/article/caves---cliffs--part-i-out-today-java')
         webview.start()
 
@@ -1066,7 +1221,7 @@ class Pycraft():
 
     def run_mc(self):
         '''Runs minecraft with the specifed version'''
-        
+
         with open("settings.json", "r") as js_read:
             s = js_read.read()
             s = s.replace('\t','')  #Trailing commas in dict cause file read problems, these lines will fix it.
@@ -1088,28 +1243,26 @@ class Pycraft():
             self.s1 = self.s1.replace(',]',']')
             self.data1 = json.loads(self.s1)
             #print(json.dumps(data, indent=4,))
-            
+
         self.mc_dir = data["Minecraft-home"]
 
-        self.fps_boost = self.data1["Fps-Boost"]
-        self.fps_boost_selected = self.data1["setting-info"][0]["fps_boost_selected"]
         self.allocated_ram = self.data1["allocated_ram"]
         self.allocated_ram_selected = self.data1["setting-info"][0]["allocated_ram_selected"]
 
+        self.modified_ram = self.allocated_ram//1
+        self.ram_mb = int(self.modified_ram)
+
         self.ram_gb = self.allocated_ram//1000
+        self.int_ram_gb = int(self.ram_gb)
+
         print(self.allocated_ram)
         self.cpu_count = os.cpu_count()
 
-        if self.fps_boost and self.fps_boost_selected == True:
-            if self.ram_gb > 6:
-                self.j1 = f"-XX:+UnlockExperimentalVMOptions Xmx{int(self.ram_gb)}G -Xms128M XX:ParallelGCThreads={(self.cpu_count)*2} -XX:+AggressiveOpts -XX:+AggressiveHeap"
-            else:
-                self.j1 = f"-XX:+UnlockExperimentalVMOptions Xmx{int(self.ram_gb)}G -Xms128M XX:ParallelGCThreads={(self.cpu_count)*2} -XX:+AggressiveOpts -XX:+AggressiveHeap"
-        else:
-            if self.os_name.startswith("Linux"):
-                self.j1 = [f"-Xmx{int(self.ram_gb)}G", "-Xms128M"]
-            elif self.os_name.startswith("Windows"):
-                self.j1 = [f"-Xmx{int(self.ram_gb)}G", "-Xms128M"]
+        
+        if self.os_name.startswith("Linux"):
+            self.j1 = [f"-Xmx{int(self.ram_mb)}M", "-Xms128M"]
+        elif self.os_name.startswith("Windows"):
+            self.j1 = [f"-Xmx{int(self.ram_mb)}M", "-Xms128M"]
 
 
         data["jvm-args"] = self.j1
@@ -1117,524 +1270,581 @@ class Pycraft():
         with open("settings.json", "w") as js_set:
             json.dump(data, js_set, indent=4)
             js_set.close()
+        if connected == True:
+            if self.runtime_ver.startswith("Vanilla"): #Checking for selected version before running minecraft.
+                if self.login_method == "mojang login":
+                    try:
+                        self.usr = data["User-info"][0]["username"]
+                        self.pwd = self.pwd1
+                        self.mc_ver = data["selected-version"].strip("Vanilla: ")
+                        self.detected_ver = ""
 
-        if self.runtime_ver.startswith("Vanilla"): #Checking for selected version before running minecraft.
-            if self.login_method == "mojang login":
-                try:
-                    self.usr = data["User-info"][0]["username"]
-                    self.pwd = self.pwd1
+                        # This is done to get only the version number, cutting out the rest of the string including whitespace
+                        if connected == True:
+                            if self.mc_ver.startswith("release"):
+                                self.detected_ver = self.mc_ver.strip("release ")
+                            elif self.mc_ver.startswith("snapshot"):
+                                self.detected_ver = self.mc_ver.strip("snapshot ")
+                        elif connected == False:
+                            self.detected_ver = self.mc_ver
+
+                        print(self.detected_ver)
+
+
+                        self.login_data = minecraft_launcher_lib.account.login_user(self.usr, self.pwd)
+
+                        if os_name.startswith("Linux"):
+
+                            self.options = {
+                            "username": self.login_data["selectedProfile"]["name"],
+                            "uuid": self.login_data["selectedProfile"]["id"],
+                            "token": self.login_data["accessToken"],
+                            "jvmArguments": self.j1,
+                            "executablePath": "java"
+                            #"executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir) #The path to the java executable
+                            #"executablePath" : executablePath
+                            }
+
+                        else:
+                            self.options = {
+                            "username": self.login_data["selectedProfile"]["name"],
+                            "uuid": self.login_data["selectedProfile"]["id"],
+                            "token": self.login_data["accessToken"],
+                            "jvmArguments": self.j1,
+                            "executablePath": self.data1["executablePath"] #The path to the java executable
+                            #"executablePath" : executablePath
+                            }
+
+                        data["User-info"][0]["username"] = self.usr
+                        data["User-info"][0]["UUID"] = self.options["uuid"]
+
+                        with open("settings.json", "w") as js_set:
+                            json.dump(data, js_set, indent=4)
+                            js_set.close()
+
+
+                        self.window.withdraw()
+                        self.minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(self.detected_ver, self.mc_dir, self.options)
+                        print(f"Launching minecraft version {self.mc_ver}")
+                        subprocess.call(self.minecraft_command)
+                    except minecraft_launcher_lib.exceptions.VersionNotFound as e:
+                        showerror(title="Error!", message=e)
+
+                elif self.login_method == "cracked login":
+
+                    self.generate_cracked_uid()
+
+                    try:
+                        self.usr = data["User-info"][0]["username"]
+                        self.pwd = self.pwd1
+                        self.mc_ver = data["selected-version"].strip("Vanilla: ")
+
+                        if connected == True:
+                            if self.mc_ver.startswith("release"):
+                                self.detected_ver = self.mc_ver.strip("release ")
+                            elif self.mc_ver.startswith("snapshot"):
+                                self.detected_ver = self.mc_ver.strip("snapshot ")
+                        elif connected == False:
+                            self.detected_ver = self.mc_ver
+
+
+                        print(self.detected_ver)
+
+                        with open("settings.json", "w") as js_set:
+                            json.dump(data, js_set, indent=4)
+                            js_set.close()
+
+                        if os_name.startswith("Linux"):
+
+                            self.options = {
+                            "username": self.usr,
+                            "uuid": self.uid,
+                            "token": "",
+                            "jvmArguments": self.j1,
+                            "executablePath": "java"
+                            #"executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir) #The path to the java executable
+                            #"executablePath" : executablePath
+                            }
+
+                        else:
+                            self.options = {
+                            "username": self.usr,
+                            "uuid": self.uid,
+                            "token": "",
+                            "jvmArguments": self.j1,
+                            "executablePath": self.data1["executablePath"] #The path to the java executable
+                            #"executablePath" : executablePath
+                            }
+
+                        data["User-info"][0]["username"] = self.usr
+                        data["User-info"][0]["UUID"] = self.uid
+
+                        self.window.withdraw()
+                        self.minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(self.detected_ver, self.mc_dir, self.options)
+                        print(f"Launching minecraft version {self.mc_ver}")
+                        subprocess.call(self.minecraft_command)
+
+                    except minecraft_launcher_lib.exceptions.VersionNotFound as e:
+                        showerror(title="Error!", message=e)
+
+                elif self.login_method == "ely_by login":
+                    self.ely_authenticate()
+
                     self.mc_ver = data["selected-version"].strip("Vanilla: ")
-                    self.detected_ver = ""
-                        
-                    # This is done to get only the version number, cutting out the rest of the string including whitespace
-                    if connected == True:
-                        if self.mc_ver.startswith("release"):
-                            self.detected_ver = self.mc_ver.strip("release ")
-                        elif self.mc_ver.startswith("snapshot"):
-                            self.detected_ver = self.mc_ver.strip("snapshot ")
-                    elif connected == False:
-                        self.detected_ver = self.mc_ver
-                    
-                    print(self.detected_ver)
-                        
 
-                    self.login_data = minecraft_launcher_lib.account.login_user(self.usr, self.pwd)
-
-                    if os_name.startswith("Linux"):
-
-                        self.options = {
-                        "username": self.login_data["selectedProfile"]["name"],
-                        "uuid": self.login_data["selectedProfile"]["id"],
-                        "token": self.login_data["accessToken"],
-                        "jvmArguments": self.j1,
-                        "executablePath": "java"
-                        #"executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir) #The path to the java executable
-                        #"executablePath" : executablePath
-                        }
-
-                    else:
-                        self.options = {
-                        "username": self.login_data["selectedProfile"]["name"],
-                        "uuid": self.login_data["selectedProfile"]["id"],
-                        "token": self.login_data["accessToken"],
-                        "jvmArguments": self.j1,
-                        "executablePath": self.data1["executablePath"] #The path to the java executable
-                        #"executablePath" : executablePath
-                        }
-
-                    data["User-info"][0]["username"] = self.usr
-                    data["User-info"][0]["UUID"] = self.options["uuid"]
-
-                    with open("settings.json", "w") as js_set:
-                        json.dump(data, js_set, indent=4)
-                        js_set.close()
+                    if self.mc_ver.startswith("release"):
+                        self.detected_ver = self.mc_ver.strip("release ")
+                    elif self.mc_ver.startswith("snapshot"):
+                        self.detected_ver = self.mc_ver.strip("snapshot ")
 
 
-                    self.window.withdraw()
-                    self.minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(self.detected_ver, self.mc_dir, self.options)
-                    print(f"Launching minecraft version {self.mc_ver}")
-                    subprocess.call(self.minecraft_command)
-                except minecraft_launcher_lib.exceptions.VersionNotFound as e:
-                    showerror(title="Error!", message=e)
-
-            elif self.login_method == "cracked login":
-
-                self.generate_cracked_uid()
-
-                try:
-                    self.usr = data["User-info"][0]["username"]
-                    self.pwd = self.pwd1
-                    self.mc_ver = data["selected-version"].strip("Vanilla: ")
-                        
-                    if connected == True:
-                        if self.mc_ver.startswith("release"):
-                            self.detected_ver = self.mc_ver.strip("release ")
-                        elif self.mc_ver.startswith("snapshot"):
-                            self.detected_ver = self.mc_ver.strip("snapshot ")
-                    elif connected == False:
-                        self.detected_ver = self.mc_ver
+                    try:
+                        self.j2 = [r"-javaagent:{}/authlib/".format(currn_dir) + "" + f"authlib-injector-1.1.39.jar=ely.by", f"-Xmx{int(self.ram_mb)}M", "-Xms128M"]
 
 
-                    print(self.detected_ver)
+                        data["User-info"][0]["username"] = self.usr
+                        data["jvm-args"] = self.j2
 
-                    with open("settings.json", "w") as js_set:
-                        json.dump(data, js_set, indent=4)
-                        js_set.close()
+                        with open("settings.json", "w") as js_set:
+                            json.dump(data, js_set, indent=4)
+                            js_set.close()
 
-                    if os_name.startswith("Linux"):
+                        self.accessToken = data["accessToken"]
 
                         self.options = {
                         "username": self.usr,
                         "uuid": self.uid,
-                        "token": "",
-                        "jvmArguments": self.j1,
-                        "executablePath": "java"
-                        #"executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir) #The path to the java executable
+                        "token": self.accessToken,
+                        "jvmArguments" : self.j2,
+                        "executablePath": "java" #self.data1["executablePath"]
                         #"executablePath" : executablePath
                         }
 
-                    else:
-                        self.options = {
-                        "username": self.usr,
-                        "uuid": self.uid,
-                        "token": "",
-                        "jvmArguments": self.j1,
-                        "executablePath": self.data1["executablePath"] #The path to the java executable
-                        #"executablePath" : executablePath
-                        }
+                        data["executablePath"] = self.options["executablePath"]
+                        data["User-info"][0]["username"] = self.usr
+                        data["User-info"][0]["UUID"] = self.uid
+                        data["jvm-args"] = self.j2
 
-                    data["User-info"][0]["username"] = self.usr
-                    data["User-info"][0]["UUID"] = self.uid
+                        with open("settings.json", "w") as js_set:
+                            json.dump(data, js_set, indent=4)
+                            js_set.close()
 
-                    self.window.withdraw()
-                    self.minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(self.detected_ver, self.mc_dir, self.options)
-                    print(f"Launching minecraft version {self.mc_ver}")
-                    subprocess.call(self.minecraft_command)
+                        self.window.withdraw()
 
-                except minecraft_launcher_lib.exceptions.VersionNotFound as e:
-                    showerror(title="Error!", message=e)
+                        self.minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(self.detected_ver, self.mc_dir, self.options)
+                        print(f"Launching minecraft version {self.mc_ver}")
+                        subprocess.call(self.minecraft_command)
+                    except minecraft_launcher_lib.exceptions.VersionNotFound as e:
+                        showerror(title="Error!", message=e)
+                        print(e)
 
-            elif self.login_method == "ely_by login":
-                self.ely_authenticate()
+            elif self.runtime_ver.startswith("Forge"):
+                if self.login_method == "mojang login":
+                    try:
+                        self.usr = data["User-info"][0]["username"]
+                        self.pwd = self.pwd1
+                        self.mc_ver = data["selected-version"].strip("Forge: ")
 
-                self.mc_ver = data["selected-version"].strip("Vanilla: ")
-                    
-                if self.mc_ver.startswith("release"):
-                    self.detected_ver = self.mc_ver.strip("release ")
-                elif self.mc_ver.startswith("snapshot"):
-                    self.detected_ver = self.mc_ver.strip("snapshot ")
+                        # This is done to get only the version number, cutting out the rest of the string including whitespace
 
-
-                try:
-                    self.j2 = [r"-javaagent:{}/authlib/".format(currn_dir) + "" + f"authlib-injector-1.1.39.jar=ely.by", f"-Xmx{int(self.ram_gb)}G", "-Xms128M"]
+                        # Not required while running forge
+                        if connected == True:
+                            self.detected_ver1 = self.mc_ver[:7]+"forge-"+self.mc_ver[7:]
+                        elif connected == False:
+                            self.detected_ver1 = self.mc_ver[:7]+"forge-"+self.mc_ver[7:]
 
 
-                    data["User-info"][0]["username"] = self.usr
-                    data["jvm-args"] = self.j2
 
-                    with open("settings.json", "w") as js_set:
-                        json.dump(data, js_set, indent=4)
-                        js_set.close()
+                        self.login_data = minecraft_launcher_lib.account.login_user(self.usr, self.pwd)
 
-                    self.accessToken = data["accessToken"]
 
-                    self.options = {
-                    "username": self.usr,
-                    "uuid": self.uid,
-                    "token": self.accessToken,
-                    "jvmArguments" : self.j2,
-                    "executablePath": "java" #self.data1["executablePath"]
-                    #"executablePath" : executablePath
-                    }
+                        if os_name.startswith("Linux"):
 
-                    data["executablePath"] = self.options["executablePath"]
+                            self.options = {
+                            "username": self.login_data["selectedProfile"]["name"],
+                            "uuid": self.login_data["selectedProfile"]["id"],
+                            "token": self.login_data["accessToken"],
+                            "jvmArguments": self.j1,
+                            "executablePath": "java"
+                            #"executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir) #The path to the java executable
+                            #"executablePath" : executablePath
+                            }
 
-                    with open("settings.json", "w") as js_set:
-                        json.dump(data, js_set, indent=4)
-                        js_set.close()
+                        else:
+                            self.options = {
+                            "username": self.login_data["selectedProfile"]["name"],
+                            "uuid": self.login_data["selectedProfile"]["id"],
+                            "token": self.login_data["accessToken"],
+                            "jvmArguments": self.j1,
+                            "executablePath": self.data1["executablePath"] #The path to the java executable
+                            #"executablePath" : executablePath
+                            }
 
-                    self.window.withdraw()
+                        data["User-info"][0]["username"] = self.usr
+                        data["User-info"][0]["UUID"] = self.options["uuid"]
 
-                    self.minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(self.detected_ver, self.mc_dir, self.options)
-                    print(f"Launching minecraft version {self.mc_ver}")
-                    subprocess.call(self.minecraft_command)
-                except minecraft_launcher_lib.exceptions.VersionNotFound as e:
-                    showerror(title="Error!", message=e)
-                    print(e)
-            
-        elif self.runtime_ver.startswith("Forge"):
-            if self.login_method == "mojang login":
-                try:
+                        with open("settings.json", "w") as js_set:
+                            json.dump(data, js_set, indent=4)
+                            js_set.close()
+
+
+
+                        self.window.withdraw()
+
+                        self.minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(self.detected_ver1, self.mc_dir, self.options)
+                        print(f"Launching minecraft version {self.mc_ver}")
+                        subprocess.call(self.minecraft_command)
+
+                    except minecraft_launcher_lib.exceptions.VersionNotFound as e:
+                        showerror(title="Error!", message=e)
+                        print(e)
+
+                elif self.login_method == "cracked login":
+
+                    self.generate_cracked_uid()
+
+
                     self.usr = data["User-info"][0]["username"]
                     self.pwd = self.pwd1
                     self.mc_ver = data["selected-version"].strip("Forge: ")
-                        
-                    # This is done to get only the version number, cutting out the rest of the string including whitespace
-                        
-                    # Not required while running forge
-                    if connected == True:
-                        self.detected_ver1 = self.mc_ver[:7]+"forge-"+self.mc_ver[7:]
-                    elif connected == False:
-                        self.detected_ver1 = self.mc_ver
-                    
-                    
 
-                    self.login_data = minecraft_launcher_lib.account.login_user(self.usr, self.pwd)
-
-
-                    if os_name.startswith("Linux"):
-
-                        self.options = {
-                        "username": self.login_data["selectedProfile"]["name"],
-                        "uuid": self.login_data["selectedProfile"]["id"],
-                        "token": self.login_data["accessToken"],
-                        "jvmArguments": self.j1,
-                        "executablePath": "java"
-                        #"executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir) #The path to the java executable
-                        #"executablePath" : executablePath
-                        }
-
-                    else:
-                        self.options = {
-                        "username": self.login_data["selectedProfile"]["name"],
-                        "uuid": self.login_data["selectedProfile"]["id"],
-                        "token": self.login_data["accessToken"],
-                        "jvmArguments": self.j1,
-                        "executablePath": self.data1["executablePath"] #The path to the java executable
-                        #"executablePath" : executablePath
-                        }
-                    
-                    data["User-info"][0]["username"] = self.usr
-                    data["User-info"][0]["UUID"] = self.options["uuid"]
-
-                    with open("settings.json", "w") as js_set:
-                        json.dump(data, js_set, indent=4)
-                        js_set.close()
+                    try:
+                        if connected == True:
+                            self.detected_ver1 = self.mc_ver[:7]+"forge-"+self.mc_ver[7:]
+                        elif connected == False:
+                            self.detected_ver1 = self.mc_ver[:7]+"forge-"+self.mc_ver[7:]
 
 
 
-                    self.window.withdraw()
-
-                    self.minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(self.detected_ver1, self.mc_dir, self.options)
-                    print(f"Launching minecraft version {self.mc_ver}")
-                    subprocess.call(self.minecraft_command)
-
-                except minecraft_launcher_lib.exceptions.VersionNotFound as e:
-                    showerror(title="Error!", message=e)
-                    print(e)
-
-            elif self.login_method == "cracked login":
-                
-                self.generate_cracked_uid()
 
 
-                self.usr = data["User-info"][0]["username"]
-                self.pwd = self.pwd1
-                self.mc_ver = data["selected-version"].strip("Forge: ")
-                    
-                try:
-                    if connected == True:
-                        self.detected_ver1 = self.mc_ver[:7]+"forge-"+self.mc_ver[7:]
-                    elif connected == False:
-                        self.detected_ver1 = self.mc_ver
+                        if os_name.startswith("Linux"):
 
-                    
+                            self.options = {
+                            "username": self.usr,
+                            "uuid": self.uid,
+                            "token": "",
+                            "jvmArguments": self.j1,
+                            "executablePath": "java"
+                            #"executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir) #The path to the java executable
+                            #"executablePath" : executablePath
+                            }
 
-                    
+                        else:
+                            self.options = {
+                            "username": self.usr,
+                            "uuid": self.uid,
+                            "token": "",
+                            "jvmArguments": self.j1,
+                            "executablePath": self.data1["executablePath"] #The path to the java executable
+                            #"executablePath" : executablePath
+                            }
 
-                    if os_name.startswith("Linux"):
+                        data["User-info"][0]["username"] = self.usr
+                        data["User-info"][0]["UUID"] = self.uid
 
+                        with open("settings.json", "w") as js_set:
+                            json.dump(data, js_set, indent=4)
+                            js_set.close()
+
+                        self.window.withdraw()
+
+                        self.minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(self.detected_ver1, self.mc_dir, self.options)
+                        print(f"Launching minecraft version {self.mc_ver}")
+                        subprocess.call(self.minecraft_command)
+                    except minecraft_launcher_lib.exceptions.VersionNotFound as e:
+                        showerror(title="Error!", message=e)
+                        print(e)
+
+                elif self.login_method == "ely_by login":
+                    self.ely_authenticate()
+
+                    self.mc_ver = data["selected-version"].strip("Forge: ")
+
+                    self.detected_ver1 = self.mc_ver[:7]+"forge-"+self.mc_ver[7:]
+
+                    self.v1 = self.detected_ver1.rstrip(self.detected_ver1[7:])
+
+
+                    try:
+
+                        self.j2 = [r"-javaagent:{}/authlib/".format(currn_dir) + "" + f"authlib-injector-1.1.39.jar=ely.by", f"-Xmx{int(self.ram_mb)}M", "-Xms128M"]
+
+
+                        data["User-info"][0]["username"] = self.usr
+                        data["jvm-args"] = self.j2
+
+                        with open("settings.json", "w") as js_set:
+                            json.dump(data, js_set, indent=4)
+                            js_set.close()
+
+                        self.accessToken = data["accessToken"]
                         self.options = {
                         "username": self.usr,
                         "uuid": self.uid,
-                        "token": "",
-                        "jvmArguments": self.j1,
-                        "executablePath": "java"
-                        #"executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir) #The path to the java executable
+                        "token": self.accessToken,
+                        "jvmArguments" : self.j2,
+                        "executablePath": self.data1["executablePath"]
                         #"executablePath" : executablePath
                         }
 
-                    else:
-                        self.options = {
-                        "username": self.usr,
-                        "uuid": self.uid,
-                        "token": "",
-                        "jvmArguments": self.j1,
-                        "executablePath": self.data1["executablePath"] #The path to the java executable
-                        #"executablePath" : executablePath
-                        }
+                        data["executablePath"] = self.options["executablePath"]
+                        data["User-info"][0]["username"] = self.usr
+                        data["User-info"][0]["UUID"] = self.uid
+                        data["jvm-args"] = self.j2
 
-                    data["User-info"][0]["username"] = self.usr
-                    data["User-info"][0]["UUID"] = self.uid
-
-                    with open("settings.json", "w") as js_set:
-                        json.dump(data, js_set, indent=4)
-                        js_set.close()
-
-                    self.window.withdraw()
-
-                    self.minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(self.detected_ver1, self.mc_dir, self.options)
-                    print(f"Launching minecraft version {self.mc_ver}")
-                    subprocess.call(self.minecraft_command)
-                except minecraft_launcher_lib.exceptions.VersionNotFound as e:
-                    showerror(title="Error!", message=e)
-                    print(e)
-            
-            elif self.login_method == "ely_by login":
-                self.ely_authenticate()
-
-                self.mc_ver = data["selected-version"].strip("Forge: ")
-
-                self.detected_ver1 = self.mc_ver[:7]+"forge-"+self.mc_ver[7:]
-                    
-                self.v1 = self.detected_ver1.rstrip(self.detected_ver1[7:])
+                        with open("settings.json", "w") as js_set:
+                            json.dump(data, js_set, indent=4)
+                            js_set.close()
 
 
-                try:
-                    
-                    self.j2 = [r"-javaagent:{}/authlib/".format(currn_dir) + "" + f"authlib-injector-1.1.39.jar=ely.by", f"-Xmx{int(self.ram_gb)}G", "-Xms128M"]
+                        self.window.withdraw()
+
+                        self.minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(self.detected_ver1, self.mc_dir, self.options)
+                        print(f"Launching minecraft version {self.mc_ver}")
+                        subprocess.call(self.minecraft_command)
+                    except minecraft_launcher_lib.exceptions.VersionNotFound as e:
+                        showerror(title="Error!", message=e)
+                        print(e)
+
+            elif self.runtime_ver.startswith("Fabric"):
+                self.lv = get_latest_loader_version()
+                if self.login_method == "mojang login":
+                    try:
+                        self.usr = data["User-info"][0]["username"]
+                        self.pwd = self.pwd1
+                        self.mc_ver = data["selected-version"].strip("Fabric: ")
 
 
-                    data["User-info"][0]["username"] = self.usr
-                    data["jvm-args"] = self.j2
+                        if connected == True:
+                            self.v1 = self.mc_ver[:6]
 
-                    with open("settings.json", "w") as js_set:
-                        json.dump(data, js_set, indent=4)
-                        js_set.close()
+                            # This is done to get only the version number, cutting out the rest of the string including whitespace
 
-                    self.accessToken = data["accessToken"]
-                    self.options = {
-                    "username": self.usr,
-                    "uuid": self.uid,
-                    "token": self.accessToken,
-                    "jvmArguments" : self.j2,
-                    "executablePath": self.data1["executablePath"]
-                    #"executablePath" : executablePath
-                    }
-
-                    data["executablePath"] = self.options["executablePath"]
-
-                    with open("settings.json", "w") as js_set:
-                        json.dump(data, js_set, indent=4)
-                        js_set.close()
+                            # Not required while running forge
+                            self.detected_ver2 = f"fabric-loader-{self.lv}-{self.v1}"
+                        elif connected == False:
+                            self.detected_ver2 = self.mc_ver
 
 
-                    self.window.withdraw()
 
-                    self.minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(self.detected_ver1, self.mc_dir, self.options)
-                    print(f"Launching minecraft version {self.mc_ver}")
-                    subprocess.call(self.minecraft_command)
-                except minecraft_launcher_lib.exceptions.VersionNotFound as e:
-                    showerror(title="Error!", message=e)
-                    print(e)
+                        self.login_data = minecraft_launcher_lib.account.login_user(self.usr, self.pwd)
 
-        elif self.runtime_ver.startswith("Fabric"):
-            self.lv = get_latest_loader_version()
-            if self.login_method == "mojang login":
-                try:
+
+                        if os_name.startswith("Linux"):
+
+                            self.options = {
+                            "username": self.login_data["selectedProfile"]["name"],
+                            "uuid": self.login_data["selectedProfile"]["id"],
+                            "token": self.login_data["accessToken"],
+                            "jvmArguments": self.j1,
+                            "executablePath": "java"
+                            #"executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir) #The path to the java executable
+                            #"executablePath" : executablePath
+                            }
+
+                        else:
+                            self.options = {
+                            "username": self.login_data["selectedProfile"]["name"],
+                            "uuid": self.login_data["selectedProfile"]["id"],
+                            "token": self.login_data["accessToken"],
+                            "jvmArguments": self.j1,
+                            "executablePath": self.data1["executablePath"] #The path to the java executable
+                            #"executablePath" : executablePath
+                            }
+
+                        data["User-info"][0]["username"] = self.usr
+                        data["User-info"][0]["UUID"] = self.options["uuid"]
+
+                        with open("settings.json", "w") as js_set:
+                            json.dump(data, js_set, indent=4)
+                            js_set.close()
+
+
+
+                        self.window.withdraw()
+
+                        self.minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(self.detected_ver2, self.mc_dir, self.options)
+                        print(f"Launching minecraft version {self.mc_ver}")
+                        subprocess.call(self.minecraft_command)
+
+                    except minecraft_launcher_lib.exceptions.VersionNotFound as e:
+                        showerror(title="Error!", message=f"{e}. Try re-downloading this fabric version, seems like a new loader version has been released.")
+                        print(e)
+
+                elif self.login_method == "cracked login":
+
+                    self.generate_cracked_uid()
+
                     self.usr = data["User-info"][0]["username"]
                     self.pwd = self.pwd1
                     self.mc_ver = data["selected-version"].strip("Fabric: ")
 
 
-                    if connected == True:
-                        self.v1 = self.mc_ver[:6]
-                            
-                        # This is done to get only the version number, cutting out the rest of the string including whitespace
-                            
-                        # Not required while running forge
-                        self.detected_ver2 = f"fabric-loader-{self.lv}-{self.v1}"
-                    elif connected == False:
-                        self.detected_ver2 = self.mc_ver
-                    
-                    
 
-                    self.login_data = minecraft_launcher_lib.account.login_user(self.usr, self.pwd)
+                    try:
+                        if connected == True:
+                            self.v1 = self.mc_ver[:6]
 
+                            # This is done to get only the version number, cutting out the rest of the string including whitespace
 
-                    if os_name.startswith("Linux"):
-
-                        self.options = {
-                        "username": self.login_data["selectedProfile"]["name"],
-                        "uuid": self.login_data["selectedProfile"]["id"],
-                        "token": self.login_data["accessToken"],
-                        "jvmArguments": self.j1,
-                        "executablePath": "java"
-                        #"executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir) #The path to the java executable
-                        #"executablePath" : executablePath
-                        }
-
-                    else:
-                        self.options = {
-                        "username": self.login_data["selectedProfile"]["name"],
-                        "uuid": self.login_data["selectedProfile"]["id"],
-                        "token": self.login_data["accessToken"],
-                        "jvmArguments": self.j1,
-                        "executablePath": self.data1["executablePath"] #The path to the java executable
-                        #"executablePath" : executablePath
-                        }
-                    
-                    data["User-info"][0]["username"] = self.usr
-                    data["User-info"][0]["UUID"] = self.options["uuid"]
-
-                    with open("settings.json", "w") as js_set:
-                        json.dump(data, js_set, indent=4)
-                        js_set.close()
+                            # Not required while running forge
+                            self.detected_ver2 = f"fabric-loader-{self.lv}-{self.v1}"
+                        elif connected == False:
+                            self.detected_ver2 = self.mc_ver
 
 
 
-                    self.window.withdraw()
 
-                    self.minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(self.detected_ver2, self.mc_dir, self.options)
-                    print(f"Launching minecraft version {self.mc_ver}")
-                    subprocess.call(self.minecraft_command)
+                        if os_name.startswith("Linux"):
 
-                except minecraft_launcher_lib.exceptions.VersionNotFound as e:
-                    showerror(title="Error!", message=f"{e}. Try re-downloading this fabric version, seems like a new loader version has been released.")
-                    print(e)
+                            self.options = {
+                            "username": self.usr,
+                            "uuid": self.uid,
+                            "token": "",
+                            "jvmArguments": self.j1,
+                            "executablePath": "java"
+                            #"executablePath" : executablePath
+                            }
 
-            elif self.login_method == "cracked login":
+                        else:
+                            self.options = {
+                            "username": self.usr,
+                            "uuid": self.uid,
+                            "token": "",
+                            "jvmArguments": self.j1,
+                            "executablePath": self.data1["executablePath"] #The path to the java executable
+                            #"executablePath" : executablePath
+                            }
 
-                self.generate_cracked_uid()
+                        data["User-info"][0]["username"] = self.usr
+                        data["User-info"][0]["UUID"] = self.uid
 
-                self.usr = data["User-info"][0]["username"]
-                self.pwd = self.pwd1
-                self.mc_ver = data["selected-version"].strip("Fabric: ")
-                    
-                try:
-                    if connected == True:
-                        self.v1 = self.mc_ver[:6]
-                            
-                        # This is done to get only the version number, cutting out the rest of the string including whitespace
-                            
-                        # Not required while running forge
-                        self.detected_ver2 = f"fabric-loader-{self.lv}-{self.v1}"
-                    elif connected == False:
-                        self.detected_ver2 = self.mc_ver
-                    
 
-                   
 
-                    if os_name.startswith("Linux"):
+                        with open("settings.json", "w") as js_set:
+                            json.dump(data, js_set, indent=4)
+                            js_set.close()
 
-                        self.options = {
-                        "username": self.usr,
-                        "uuid": self.uid,
-                        "token": "",
-                        "jvmArguments": self.j1,
-                        "executablePath": "java" 
-                        #"executablePath" : executablePath
-                        }
+                        self.window.withdraw()
 
-                    else:
+                        self.minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(self.detected_ver2, self.mc_dir, self.options)
+                        print(f"Launching minecraft version {self.mc_ver}")
+                        subprocess.call(self.minecraft_command)
+                    except minecraft_launcher_lib.exceptions.VersionNotFound as e:
+                        showerror(title="Error!", message=f"{e}. Try re-downloading this fabric version, seems like a new loader version has been released.")
+                        print(e)
+
+                elif self.login_method == "ely_by login":
+                    self.ely_authenticate()
+
+                    self.mc_ver = data["selected-version"].strip("Fabric: ")
+
+                    self.v1 = self.mc_ver[:6]
+
+                    self.detected_ver2 = f"fabric-loader-{self.lv}-{self.mc_ver}"
+
+
+
+
+                    try:
+
+                        self.j2 = [r"-javaagent:{}/authlib/".format(currn_dir) + "" + f"authlib-injector-1.1.39.jar=ely.by", f"-Xmx{int(self.ram_mb)}M", "-Xms128M"]
+
+
+                        data["User-info"][0]["username"] = self.usr
+                        data["jvm-args"] = self.j2
+
+                        with open("settings.json", "r") as js_read:
+                            s = js_read.read()
+                            s = s.replace('\t','')  #Trailing commas in dict cause file read problems, these lines will fix it.
+                            s = s.replace('\n','')  #Found this on stackoverflow.
+                            s = s.replace(',}','}')
+                            s = s.replace(',]',']')
+                            data = json.loads(s)
+
+
+                        self.accessToken = data["accessToken"]
+                        self.uid = data["User-info"][0]["UUID"]
+
+
                         self.options = {
                         "username": self.usr,
                         "uuid": self.uid,
-                        "token": "",
-                        "jvmArguments": self.j1,
-                        "executablePath": self.data1["executablePath"] #The path to the java executable
+                        "token": self.accessToken,
+                        "jvmArguments" : self.j2,
+                        "executablePath": self.data1["executablePath"]
                         #"executablePath" : executablePath
                         }
 
-                    data["User-info"][0]["username"] = self.usr
-                    data["User-info"][0]["UUID"] = self.uid
+                        data["executablePath"] = self.options["executablePath"]
+                        data["jvm-args"] = self.j2
+                        data["User-info"][0]["username"] = self.usr
+                        data["User-info"][0]["UUID"] = self.uid
+
+                        with open("settings.json", "w") as js_set:
+                            json.dump(data, js_set, indent=4)
+                            js_set.close()
 
 
-                    with open("settings.json", "w") as js_set:
-                        json.dump(data, js_set, indent=4)
-                        js_set.close()
+                        self.window.withdraw()
 
-                    self.window.withdraw()
+                        self.minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(self.detected_ver2, self.mc_dir, self.options)
+                        print(f"Launching minecraft version {self.mc_ver}")
+                        subprocess.call(self.minecraft_command)
+                    except minecraft_launcher_lib.exceptions.VersionNotFound as e:
+                        showerror(title="Error!", message=f"{e}. Try re-downloading this fabric version, seems like a new loader version has been released.")
+                        print(e)
 
-                    self.minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(self.detected_ver2, self.mc_dir, self.options)
-                    print(f"Launching minecraft version {self.mc_ver}")
-                    subprocess.call(self.minecraft_command)
-                except minecraft_launcher_lib.exceptions.VersionNotFound as e:
-                    showerror(title="Error!", message=f"{e}. Try re-downloading this fabric version, seems like a new loader version has been released.")
-                    print(e)
-            
-            elif self.login_method == "ely_by login":
-                self.ely_authenticate()
+        elif connected == False:
 
-                self.mc_ver = data["selected-version"].strip("Fabric: ")
+            self.usr = data["User-info"][0]["username"]
+            self.uid = uid
 
-                self.v1 = self.mc_ver[:6]
+            self.detected_ver2 = self.offversionsList.get()
 
-                self.detected_ver2 = f"fabric-loader-{self.lv}-{self.mc_ver}"
-                    
-                
+            if os_name.startswith("Linux"):
 
+                self.options = {
+                "username": self.usr,
+                "uuid": self.uid,
+                #"token": self.accessToken
+                "jvmArguments": self.j1,
+                "executablePath": "java"
+                #"executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir) #The path to the java executable
+                #"executablePath" : executablePath
+                }
 
-                try:
-                    
-                    self.j2 = [r"-javaagent:{}/authlib/".format(currn_dir) + "" + f"authlib-injector-1.1.39.jar=ely.by", f"-Xmx{int(self.ram_gb)}G", "-Xms128M"]
+            else:
+                self.options = {
+                "username": self.usr,
+                "uuid": self.uid,
+                #"token": self.accessToken,
+                "jvmArguments": self.j1,
+                "executablePath": self.data1["executablePath"] #The path to the java executable
+                #"executablePath" : executablePath
+                }
 
+            data["User-info"][0]["username"] = self.usr
+            data["User-info"][0]["UUID"] = self.options["uuid"]
+            data["selected-version"] = self.detected_ver2
 
-                    data["User-info"][0]["username"] = self.usr
-                    data["jvm-args"] = self.j2
-
-                    with open("settings.json", "r") as js_read:
-                        s = js_read.read()
-                        s = s.replace('\t','')  #Trailing commas in dict cause file read problems, these lines will fix it.
-                        s = s.replace('\n','')  #Found this on stackoverflow.
-                        s = s.replace(',}','}')
-                        s = s.replace(',]',']')
-                        data = json.loads(s)
-
-
-                    self.accessToken = data["accessToken"]
-                    self.uid = data["User-info"][0]["UUID"]
-
-
-                    self.options = {
-                    "username": self.usr,
-                    "uuid": self.uid,
-                    "token": self.accessToken,
-                    "jvmArguments" : self.j2,
-                    "executablePath": self.data1["executablePath"]
-                    #"executablePath" : executablePath
-                    }
-
-                    data["executablePath"] = self.options["executablePath"]
-
-                    with open("settings.json", "w") as js_set:
-                        json.dump(data, js_set, indent=4)
-                        js_set.close()
+            with open("settings.json", "w") as js_set:
+                json.dump(data, js_set, indent=4)
+                js_set.close()
 
 
-                    self.window.withdraw()
 
-                    self.minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(self.detected_ver2, self.mc_dir, self.options)
-                    print(f"Launching minecraft version {self.mc_ver}")
-                    subprocess.call(self.minecraft_command)
-                except minecraft_launcher_lib.exceptions.VersionNotFound as e:
-                    showerror(title="Error!", message=f"{e}. Try re-downloading this fabric version, seems like a new loader version has been released.")
-                    print(e)
+            self.window.withdraw()
+
+            self.minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(self.detected_ver2, self.mc_dir, self.options)
+            print(f"Launching minecraft version {self.detected_ver2}")
+            subprocess.call(self.minecraft_command)
 
 
     def ely_authenticate(self):
         '''Connects to ely.by for user authorization'''
-        
+
         self.usr = data["User-info"][0]["username"]
         self.pwd = self.pwd1
 
@@ -1650,7 +1860,7 @@ class Pycraft():
 
         self.r = requests.get(f"https://authserver.ely.by/api/users/profiles/minecraft/{self.usr}")
         if self.r.status_code == 200:
-            print("[OK] 200", "User found, getting details........")
+            print("[OK] [200]", "User found, getting details........")
             self.r1 = requests.post(f"https://authserver.ely.by/auth/authenticate", data=self.acc_data)
             if self.r1.status_code == 200:
                 self.accessToken = self.r1.json()["accessToken"]
@@ -1672,7 +1882,7 @@ class Pycraft():
                     s = s.replace(',]',']')
                     data1 = json.loads(s)
                     print(json.dumps(data1, indent=4))'''
-                    
+
             elif self.r1.status_code == 404:
                 showerror(title="Error", message=f"Data entered is either incomplete or account is secured with Oauth2. Error code: {self.r1.status_code}")
                 print("Data entered is either incomplete or account is secured with Oauth2")
@@ -1680,7 +1890,7 @@ class Pycraft():
             print("[ERROR] 404", "User does not exist.")
             showerror(title="User not found", message=f"The specified user does not exist. Error code: {self.r.status_code}")
 
-    
+
 
     def download(self):
         '''Downloads minecraft with the specified version'''
@@ -1711,14 +1921,14 @@ class Pycraft():
             with open("settings.json", "w") as f:
                 json.dump(data, f, indent=4)
                 f.close()
-                
+
             self.selected_version = data["selected-version"]
 
             self.l5.config(text=self.selected_version, font=self.custom_font, fg="#15d38f", bg="#23272a")
 
         elif self.dl_opt == "Forge":
             self.selected_ver = self.fversionsList.get()
-                
+
             if supports_automatic_install(self.selected_ver):
                 showinfo(title="Installation started..", message=f"Installing forge version {self.selected_ver}")
                 install_forge_version(self.selected_ver, self.mc_dir, callback=self.callback)
@@ -1727,7 +1937,7 @@ class Pycraft():
                 with open("settings.json", "w") as f:
                     json.dump(data, f, indent=4)
                     f.close()
-                    
+
                 self.selected_version = data["selected-version"]
 
                 self.l5.config(text=self.selected_version, font=self.custom_font, fg="#15d38f", bg="#23272a")
@@ -1759,7 +1969,7 @@ class Pycraft():
 
             self.l5.config(text=self.selected_version, font=self.custom_font, fg="#15d38f", bg="#23272a")
 
-        
+
         elif self.dl_opt == "Ares Client":
             self.selected_ver = self.fpsversionsList.get()
 
@@ -1776,106 +1986,118 @@ class Pycraft():
                 move(r"{}/Ares".format(self.mc_dir), r"{}/versions".format(self.mc_dir))
                 print("Done")
                 os.remove(self.filename)
-            
+
             except:
                 showerror(title="Error", message="Errors encountered while downloading....")
-                
+
 
     def save_version(self):
-        self.dl_opt = self.download_options.get()
-        if self.dl_opt == "Vanilla":
-            if connected == True:
-                self.selected_ver = self.versionsList.get()
-                data["selected-version"] = "Vanilla:" + " " + f"{self.selected_ver}"
-                with open("settings.json", "w") as f:
-                    json.dump(data, f, indent=4)
-                    f.close()
+        if connected == True:
+            self.dl_opt = self.download_options.get()
 
-                self.selected_version = data["selected-version"]
+        if connected == True:
+            if self.dl_opt == "Vanilla":
+                if connected == True:
+                    self.selected_ver = self.versionsList.get()
+                    data["selected-version"] = "Vanilla:" + " " + f"{self.selected_ver}"
+                    with open("settings.json", "w") as f:
+                        json.dump(data, f, indent=4)
+                        f.close()
 
-                #self.l5.config(text=self.selected_version, font=self.custom_font, fg="#15d38f", bg="#23272a")
-                self.b3.config(text = f'{self.selected_version}\n' + 'Ready to Play', font=self.custom_font3,)
-            elif connected == False:
-                self.selected_ver = self.offversionsList.get()
-                data["selected-version"] = "Vanilla:" + " " + f"{self.selected_ver}"
-                with open("settings.json", "w") as f:
-                    json.dump(data, f, indent=4)
-                    f.close()
+                    self.selected_version = data["selected-version"]
 
-                self.selected_version = data["selected-version"]
+                    #self.l5.config(text=self.selected_version, font=self.custom_font, fg="#15d38f", bg="#23272a")
+                    self.b3.config(text = f'{self.selected_version}\n' + 'Ready to Play')
+                elif connected == False:
+                    self.selected_ver = self.offversionsList.get()
+                    data["selected-version"] = "Vanilla:" + " " + f"{self.selected_ver}"
+                    with open("settings.json", "w") as f:
+                        json.dump(data, f, indent=4)
+                        f.close()
 
-                self.b3.config(text = f'{self.selected_version}\n' + 'Ready to Play', font=self.custom_font3,)
+                    self.selected_version = data["selected-version"]
 
-        elif self.dl_opt == "Forge":
-            if connected == True:
-                self.selected_ver = self.fversionsList.get()
-                data["selected-version"] = "Forge:" + " " + f"{self.selected_ver}"
-                with open("settings.json", "w") as f:
-                    json.dump(data, f, indent=4)
-                    f.close()
+                    self.b3.config(text = f'{self.selected_version}\n' + 'Ready to Play')
 
-                self.selected_version = data["selected-version"]
+            elif self.dl_opt == "Forge":
+                if connected == True:
+                    self.selected_ver = self.fversionsList.get()
+                    data["selected-version"] = "Forge:" + " " + f"{self.selected_ver}"
+                    with open("settings.json", "w") as f:
+                        json.dump(data, f, indent=4)
+                        f.close()
 
-                self.b3.config(text = f'{self.selected_version}\n' + 'Ready to Play', font=self.custom_font3,)
-            elif connected == False:
-                self.selected_ver = self.offversionsList.get()
-                data["selected-version"] = "Forge" + " " + f"{self.selected_ver}"
-                with open("settings.json", "w") as f:
-                    json.dump(data, f, indent=4)
-                    f.close()
+                    self.selected_version = data["selected-version"]
 
-                self.selected_version = data["selected-version"]
+                    self.b3.config(text = f'{self.selected_version}\n' + 'Ready to Play')
+                elif connected == False:
+                    self.selected_ver = self.offversionsList.get()
+                    data["selected-version"] = "Forge" + " " + f"{self.selected_ver}"
+                    with open("settings.json", "w") as f:
+                        json.dump(data, f, indent=4)
+                        f.close()
 
-                self.b3.config(text = f'{self.selected_version}\n' + 'Ready to Play', font=self.custom_font3,)
+                    self.selected_version = data["selected-version"]
 
-        elif self.dl_opt == "Fabric":
-            if connected == True:
-                self.selected_ver = self.frversionsList.get()
-                data["selected-version"] = "Fabric:" + " " + f"{self.selected_ver}"
-                with open("settings.json", "w") as f:
-                    json.dump(data, f, indent=4)
-                    f.close()
+                    self.b3.config(text = f'{self.selected_version}\n' + 'Ready to Play')
 
-                self.selected_version = data["selected-version"]
+            elif self.dl_opt == "Fabric":
+                if connected == True:
+                    self.selected_ver = self.frversionsList.get()
+                    data["selected-version"] = "Fabric:" + " " + f"{self.selected_ver}"
+                    with open("settings.json", "w") as f:
+                        json.dump(data, f, indent=4)
+                        f.close()
 
-                self.b3.config(text = f'{self.selected_version}\n' + 'Ready to Play', font=self.custom_font3,)
-            elif connected == False:
-                self.selected_ver = self.offversionsList.get()
-                data["selected-version"] = "Fabric:" + " " + f"{self.selected_ver}"
-                with open("settings.json", "w") as f:
-                    json.dump(data, f, indent=4)
-                    f.close()
+                    self.selected_version = data["selected-version"]
 
-                self.selected_version = data["selected-version"]
+                    self.b3.config(text = f'{self.selected_version}\n' + 'Ready to Play')
+                elif connected == False:
+                    self.selected_ver = self.offversionsList.get()
+                    data["selected-version"] = "Fabric:" + " " + f"{self.selected_ver}"
+                    with open("settings.json", "w") as f:
+                        json.dump(data, f, indent=4)
+                        f.close()
 
-                self.b3.config(text = f'{self.selected_version}\n' + 'Ready to Play', font=self.custom_font3,)
+                    self.selected_version = data["selected-version"]
 
-        elif self.dl_opt == "Ares Client":
-            if connected == True:
-                self.selected_ver = self.fpsversionsList.get()
-                data["selected-version"] = "Ares:" + " " + f"{self.selected_ver}"
-                with open("settings.json", "w") as f:
-                    json.dump(data, f, indent=4)
-                    f.close()
+                    self.b3.config(text = f'{self.selected_version}\n' + 'Ready to Play')
 
-                self.selected_version = data["selected-version"]
+            elif self.dl_opt == "Ares Client":
+                if connected == True:
+                    self.selected_ver = self.fpsversionsList.get()
+                    data["selected-version"] = "Ares:" + " " + f"{self.selected_ver}"
+                    with open("settings.json", "w") as f:
+                        json.dump(data, f, indent=4)
+                        f.close()
 
-                self.b3.config(text = f'{self.selected_version}\n' + 'Ready to Play', font=self.custom_font3,)
-            elif connected == False:
-                self.selected_ver == self.offversionsList.get()
-                data["selected-version"] = "Ares:" + " " + "1.8.9"
-                with open("settings.json", "w") as f:
-                    json.dump(data, f, indent=4)
-                    f.close()
+                    self.selected_version = data["selected-version"]
 
-                self.selected_version = data["selected-version"]
+                    self.b3.config(text = f'{self.selected_version}\n' + 'Ready to Play')
+                elif connected == False:
+                    self.selected_ver == self.offversionsList.get()
+                    data["selected-version"] = "Ares:" + " " + "1.8.9"
+                    with open("settings.json", "w") as f:
+                        json.dump(data, f, indent=4)
+                        f.close()
 
-                self.b3.config(text = f'{self.selected_version}\n' + 'Ready to Play', font=self.custom_font3,)
+                    self.selected_version = data["selected-version"]
+
+                    self.b3.config(text = f'{self.selected_version}\n' + 'Ready to Play')
 
 
+        elif connected == False:
+            self.selected_version = self.offversionsList.get()
 
-    
-        
+            data["selected_version"] = self.selected_version
+
+            with open("settings.json", "w") as f:
+                json.dump(data, f, indent=4)
+                f.close()
+
+            self.b3.config(text = f"{self.selected_version}\n" + "Ready to Play")
+
+
     def save_acc(self):
         self.u1 = self.entry0.get()
 
@@ -1883,35 +2105,48 @@ class Pycraft():
 
             self.acc_method = self.acc_options.get()
 
-            data["User-info"][0]["username"] = self.u1
-            data["User-info"][0]["AUTH_TYPE"] = self.acc_method
-
-            with open("settings.json", "w") as f:
-                json.dump(data, f, indent=4)
-                f.close()        
 
 
-            self.l3.config(text=data["User-info"][0]["username"], font=self.custom_font3, foreground="#15d38f", background="#23272a")
+            if data["User-info"][0]["username"] == None:
+                self.l3.config(text=self.u1, font=self.custom_font3, foreground="#15d38f", background="#23272a")
 
-            self.custom_font1 = Font(family="Sunshiney", size=14)
-            
+                data["User-info"][0]["username"] = self.u1
+                data["User-info"][0]["AUTH_TYPE"] = self.acc_method
+
+                with open("settings.json", "w") as f:
+                    json.dump(data, f, indent=4)
+                    f.close()
+
+
+            else:
+                self.l3.config(text=data["User-info"][0]["username"], font=self.custom_font3, foreground="#15d38f", background="#23272a")
+
+
             if self.acc_method == "mojang login":
+                self.l3.config(text=self.u1, font=self.custom_font3, foreground="#15d38f", background="#23272a")
+                self.l3.config(text=data["User-info"][0]["username"], font=self.custom_font3, foreground="#15d38f", background="#23272a")
                 self.l4.config(text="mojang account", font=self.custom_font1, foreground="#15d38f", background="#23272a")
             elif self.acc_method == "ely_by login":
+                self.l3.config(text=self.u1, font=self.custom_font3, foreground="#15d38f", background="#23272a")
+                self.l3.config(text=data["User-info"][0]["username"], font=self.custom_font3, foreground="#15d38f", background="#23272a")
                 self.l4.config(text="ely.by account", font=self.custom_font1, foreground="#15d38f", background="#23272a")
             elif self.acc_method == "cracked login":
+                self.l3.config(text=self.u1, font=self.custom_font3, foreground="#15d38f", background="#23272a")
+                self.l3.config(text=data["User-info"][0]["username"], font=self.custom_font3, foreground="#15d38f", background="#23272a")
                 self.l4.config(text="no account", font=self.custom_font1, foreground="#15d38f", background="#23272a")
 
-        elif connected == False:
+        else:
             data["User-info"][0]["AUTH_TYPE"] = "cracked login"
 
             with open("settings.json", "w") as f:
                 json.dump(data, f, indent=4)
                 f.close()
 
-            self.l3.config(text=data["User-info"][0]["username"], font=self.custom_font3, foreground="#15d38f", background="#23272a")
+            if data["User-info"][0]["username"] == None:
+                self.l3.config(text=self.u1, font=self.custom_font3, foreground="#15d38f", background="#23272a")
+            else:
+                self.l3.config(text=data["User-info"][0]["username"], font=self.custom_font3, foreground="#15d38f", background="#23272a")
 
-            self.custom_font1 = Font(family="Sunshiney", size=14)
 
             self.l4.config(text="User is offline", font=self.custom_font1, foreground="#15d38f", background="#23272a")
 
@@ -1933,18 +2168,18 @@ class Pycraft():
             relief = "ridge")
         self.canvas3.place(x = 0, y = 0)
 
-        
+
         self.background_img1 = PhotoImage(file = f"img/bg2.png")
         self.background1 = self.canvas3.create_image(
             400, 225,
             image=self.background_img1)
 
-        
+
         self.canvas3.create_text(
             60, 380,
             text = "Accounts",
             fill = "black",
-            font = ("Sunshiney", int(16.0), "bold"))
+            font = ("Galiver Sans", int(16.0), "bold"))
 
         if connected == True:
 
@@ -1971,7 +2206,7 @@ class Pycraft():
 
 
             self.acc_options.bind('<<ComboboxSelected>>')
-            
+
 
 
 
@@ -1999,7 +2234,7 @@ class Pycraft():
             360, 380.0,
             text = "Username",
             fill = "black",
-            font = ("Sunshiney", int(16.0), "bold"))
+            font = ("Galiver Sans", int(16.0), "bold"))
 
         self.b11 = Button(self.p2, text="Save", command=self.save_acc, bootstyle="success-outline")
         self.b11.place(x=540, y=410)
@@ -2062,16 +2297,16 @@ class Pycraft():
         self.b12.place(x=500,y=62)
 
 
-        
+
 
 
     def start_download(self):
         '''Initiates a second window consisting of the download progressbar, while hiding the previous one.'''
-        
+
         def close():
             '''restores the minimized original window and cancels the download.'''
             res = askquestion(title='Abort?', message="Really cancel the download?")
-            if res == "yes": 
+            if res == "yes":
                 try:
                     if self.dl_thread.is_alive():
                         self.p1.deiconify()
@@ -2083,7 +2318,7 @@ class Pycraft():
                     print("Download window closed.")
             elif res == "no":
                 pass
-            
+
 
         self.window.withdraw()
         self.pw = tk.Toplevel()
@@ -2120,7 +2355,7 @@ class Pycraft():
         print(type(self.output))
 
         self.l1 = Label(self.pw)
-        self.l1.place(x=0, y=0)    
+        self.l1.place(x=0, y=0)
         self.player = tkvideo(r"{}/img/progressbar.mp4".format(currn_dir), self.l1, loop=1, size=(1024,500))
 
         self.b4 = Button(self.pw, text="Stop Download", command = close)
@@ -2133,11 +2368,11 @@ class Pycraft():
 
         self.pb = Progressbar(self.pw, value=0, style='success.Horizontal.TProgressbar', length=500, mode="indeterminate")
         self.pb.place(x=10, y=570)
-        
+
         self.t1 = Thread(target=lambda: self.player.play())
         self.t1.start()
 
-        
+
     def stop_download(self):
         '''restores the minimized original window and cancels the download.'''
         self.window.deiconify()
@@ -2155,20 +2390,20 @@ class Pycraft():
 
         q1 = askquestion(title="Start?", message="Start the download?")
         if q1 == "yes":
-   
+
             try:
                 self.t2 = Thread(target=self.handle_progress)
                 self.t2.start()
 
                 self.dl_thread = Thread(target=self.download) # Download thread
-                self.dl_thread.start() 
+                self.dl_thread.start()
 
                 self.monitor(self.dl_thread)
             except KeyboardInterrupt:
                 self.dl_thread.join(timeout=4.0)
                 self.t2.join(timeout=6.0)
                 self.t1.join(timeout=8.0)
-            
+
 
             print("Download Started.")
 
@@ -2179,7 +2414,7 @@ class Pycraft():
             except tk.TclError:
                 self.stop_download()
                 showinfo(title="Aborted", message="Cancelled the download" )
-        
+
 
     def monitor(self, dl_thread):
         '''Monitors the download thread, and updates the progressbar'''
@@ -2205,11 +2440,14 @@ class Pycraft():
             t4.join(timeout=3.0)
             self.window.deiconify()
 
+
+
+
 if __name__ == "__main__":
     try:
         check_internet("https://www.google.com")
+
         Pycraft()
+
     except KeyboardInterrupt:
         print("Program Exited")
-else:
-    sys.exit(1)

@@ -1,4 +1,6 @@
 # Project restarted 
+  > Contributors to this project will really be appreciated.
+
 
 # Project Info
   >A Minecraft launcher made in python.
@@ -21,6 +23,8 @@
   >v1.04-beta-2 
   
   > To use the latest version, it's best to clone the project and then run it, since I fail to keep the releases updated in the release section in tandem with     > the main code folders in the .git
+  >
+  > Yes, minecraft 1.19 and all subsequent updates are supported.
   >
   > Fixed issue of being unable to play downloaded versions offline without internet.
   >

@@ -48,7 +48,7 @@ elif os_name.startswith("Windows"):
         os.remove(filename)
     else:
         os.system("cls")
-        print("Installing java 16.....")
+        print("Installing java 17.....")
         wget.download("https://download.bell-sw.com/java/17.0.3+7/bellsoft-jdk17.0.3+7-windows-amd64.msi", bar=wget.bar_adaptive)
         filename = wget.detect_filename("https://download.bell-sw.com/java/16.0.2+7/bellsoft-jdk16.0.2+7-windows-amd64.msi")
         os.system(f"msiexec /i {filename}")

@@ -97,7 +97,7 @@ settings = {
     "executablePath": path,
     "ramlimiterExceptionBypassed": False,
     "ramlimiterExceptionBypassedSelected": False
-    # "executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir)
+    # "executablePath": f"{mc_dir}/runtime/jre-legacy/linux/jre-legacy/bin/java"
 }
 
 if not os.path.exists(f"{currn_dir}/settings.json"):
@@ -548,7 +548,7 @@ class Pycraft():
             showinfo(title="No internet access.",
                      message="You are offline!\n You won't have access to the following features: \n Skins System \n Downloads \n Ely.by accounts.")
 
-        self.mc_dir = r"{}/.minecraft".format(currn_dir)
+        self.mc_dir = f"{currn_dir}/.minecraft"
 
         #global variables
         self.cb1 = ""
@@ -837,7 +837,7 @@ class Pycraft():
             image=self.background_img6)
 
 
-        if not os.path.exists(r"{}/settings.json".format(currn_dir)):
+        if not os.path.exists(f"{currn_dir}/settings.json"):
             sefl.c1 = Label1(
                     self.splash_s,
                     text = "Generating settings.....",
@@ -1147,7 +1147,7 @@ class Pycraft():
                                 "token": self.login_data["accessToken"],
                                 "jvmArguments": self.j1,
                                 "executablePath": "java"
-                                # "executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir) #The path to the java executable
+                                # "executablePath": f"{mc_dir}/runtime/jre-legacy/linux/jre-legacy/bin/java" #The path to the java executable
                                 # "executablePath" : executablePath
                             }
 
@@ -1209,7 +1209,7 @@ class Pycraft():
                                 "token": "",
                                 "jvmArguments": self.j1,
                                 "executablePath": "java"
-                                # "executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir) #The path to the java executable
+                                # "executablePath": f"{mc_dir}/runtime/jre-legacy/linux/jre-legacy/bin/java" #The path to the java executable
                                 # "executablePath" : executablePath
                             }
 
@@ -1310,7 +1310,7 @@ class Pycraft():
                                 "token": self.login_data["accessToken"],
                                 "jvmArguments": self.j1,
                                 "executablePath": "java"
-                                # "executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir) #The path to the java executable
+                                # "executablePath": f"{mc_dir}/runtime/jre-legacy/linux/jre-legacy/bin/java" #The path to the java executable
                                 # "executablePath" : executablePath
                             }
 
@@ -1362,7 +1362,7 @@ class Pycraft():
                                 "token": "",
                                 "jvmArguments": self.j1,
                                 "executablePath": "java"
-                                # "executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir) #The path to the java executable
+                                # "executablePath": f"{mc_dir}/runtime/jre-legacy/linux/jre-legacy/bin/java" #The path to the java executable
                                 # "executablePath" : executablePath
                             }
 
@@ -1472,7 +1472,7 @@ class Pycraft():
                                 "token": self.login_data["accessToken"],
                                 "jvmArguments": self.j1,
                                 "executablePath": "java"
-                                # "executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir) #The path to the java executable
+                                # "executablePath": f"{mc_dir}/runtime/jre-legacy/linux/jre-legacy/bin/java" #The path to the java executable
                                 # "executablePath" : executablePath
                             }
 
@@ -1566,8 +1566,8 @@ class Pycraft():
 
                     try:
 
-                        self.j2 = [r"-javaagent:{}/authlib/".format(
-                            currn_dir) + "" + f"authlib-injector-1.1.39.jar=ely.by", f"-Xmx{int(self.ram_mb)}M", "-Xms128M"]
+                        self.j2 = [
+                            f"-javaagent:{currn_dir}/authlib/authlib-injector-1.1.39.jar=ely.by", f"-Xmx{int(self.ram_mb)}M", "-Xms128M"]
 
                         data["User-info"]["username"] = self.usr
                         data["jvm-args"] = self.j2
@@ -1628,7 +1628,7 @@ class Pycraft():
                     # "token": self.accessToken
                     "jvmArguments": self.j1,
                     "executablePath": "java"
-                    # "executablePath": r"{}/runtime/jre-legacy/linux/jre-legacy/bin/java".format(mc_dir) #The path to the java executable
+                    # "executablePath": f"{mc_dir}/runtime/jre-legacy/linux/jre-legacy/bin/java" #The path to the java executable
                     # "executablePath" : executablePath
                 }
 
@@ -2088,7 +2088,7 @@ class Pycraft():
         self.l1 = Label(self.pw)
         self.l1.place(x=0, y=0)
         self.player = tkvideo(
-            r"{}/img/progressbar.mp4".format(currn_dir), self.l1, loop=1, size=(1024, 500))
+            f"{currn_dir}/img/progressbar.mp4", self.l1, loop=1, size=(1024, 500))
 
         self.b4 = Button(self.pw, text="Stop Download", command=close)
         self.b4.place(x=810, y=570)

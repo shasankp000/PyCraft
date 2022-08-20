@@ -628,7 +628,7 @@ class Pycraft():
 
         self.canvas.create_text(
             70, 550,
-            text = "v1.04-beta-2",
+            text = "v1.04-beta-3",
             fill = "#000000",
             font = ("Galiver Sans", int(16.0)))
 

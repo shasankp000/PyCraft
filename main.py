@@ -612,23 +612,10 @@ class Pycraft():
 
             self.l4.config(text="User is offline", font=self.custom_font1, foreground="black", background="#C9CDEC")
 
-            '''
-
-            self.canvas.create_text(
-                1141.5, 280.0,
-                text = "Password",
-                fill = "#000000",
-                font = ("Segoe Print", int(16.0)))
-
-            self.canvas.create_text(
-                154.5, 700.0,
-                text = "Settings",
-                fill = "#15d38f",
-                font = ("Sunshiney", int(26.0)))'''
 
         self.canvas.create_text(
             70, 550,
-            text = "v1.04-beta-3",
+            text = "v1.04-beta-2",
             fill = "#000000",
             font = ("Galiver Sans", int(16.0)))
 

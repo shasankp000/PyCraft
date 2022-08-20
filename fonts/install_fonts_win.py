@@ -21,7 +21,7 @@ for directory, dirnames, filenames in os.walk(os.getcwd()):
 
         if fpath[-4:] == ".ttf":  # modify this line for including multiple extension
             with open(vbspath, 'w') as _f:
-                f.write(_TEMPL % (directory, filename))
+                _f.write(TEMPL % (directory, filename))
                 subprocess.call(['cscript.exe', vbspath])
                 time.sleep(3)  # can omit this
 

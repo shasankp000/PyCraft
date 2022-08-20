@@ -632,8 +632,9 @@ class Pycraft():
             fill = "#000000",
             font = ("Galiver Sans", int(16.0)))
 
-        if connected == False:
-            showinfo(title="No internet access.", message="You are offline!\n You won't have access to the following features: \n Skins System \n Downloads \n Ely.by accounts.")
+        if not connected:
+            showinfo(title="No internet access.",
+                     message="You are offline!\n You won't have access to the following features: \n Skins System \n Downloads \n Ely.by accounts.")
 
 
 

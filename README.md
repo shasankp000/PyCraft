@@ -20,10 +20,14 @@
   ![Additional Settings Tab](img/pycraft4.png)
 
 
-  >v1.04-beta-2 
+  >v1.04-beta-3 
   
   > To use the latest version, it's best to clone the project and then run it, since I fail to keep the releases updated in the release section in tandem with 
   the main code folders in the .git
+  >
+  > Added a modinstaller where users will have to enter the modname(in lowercase), modloader(in lowercase) and gameversion
+  >
+  > This modinstaller only downloads "stable" version of the mods from modrinth. If the stable version doesn't exist then the mod won't be downloaded( non stable versions can be added manually in the mods folder)
   >
   > Yes, minecraft 1.19 and all subsequent updates are supported.
   >

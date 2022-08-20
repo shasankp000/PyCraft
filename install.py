@@ -3,6 +3,7 @@ import time
 import platform
 import getpass
 import time
+import wget
 
 print("Getting necessary stuff...")
 time.sleep(5)
@@ -26,7 +27,6 @@ if os_name.startswith("Linux"):
     os.system("sudo rm -r torsocks")
     os.system("cd -")
     os.system("clear")
-    import wget
     print("Installing Java 17.......")
     #wget.download("https://download.java.net/java/GA/jdk13.0.2/d4173c853231432d94f001e99d882ca7/8/GPL/openjdk-13.0.2_linux-x64_bin.tar.gz", bar=wget.bar_adaptive)
     os.system("sudo apt install openjdk-17-jdk -y")
@@ -35,10 +35,10 @@ elif os_name.startswith("Windows"):
     os.system("cls")
     os.system("pip install -r requirements.txt")
     os.system("cls")
-    os.chdir(r"C:\\Users\\{}\\Downloads\\ ".format(usr_accnt))
-    import wget
+    os.chdir(f"C:\\Users\\{usr_accnt}\\Downloads\\ ")
+    
     print("Do you want to install python? It is necessary for the launcher to run. (y/n)")
-    c1 = ("Enter y if you don't have python installed, n if you have it already : ")
+    c1 = input("Enter y if you don't have python installed, n if you have it already : ")
     if c1 == "y":
         print("Installing python 3.9.6.....")
         wget.download("https://www.python.org/ftp/python/3.9.6/python-3.9.6-amd64.exe", bar=wget.bar_adaptive)
@@ -55,7 +55,7 @@ elif os_name.startswith("Windows"):
     time.sleep(5)
     os.remove(f"{filename}")
     print("Creating desktop shortcut.....")
-    os.chdir(r"C:\\Users\\{}\\Desktop\\ ".format(usr_accnt))
+    os.chdir(f"C:\\Users\\{usr_accnt}\\Desktop\\ ")
     os.system(f"shortcut.exe /F:Pycraft.lnk /A:C /T:{currn_dir}\\pycraft_gui.py /W:{currn_dir}")
     os.system("cls")
     print("You can set the icon of the shortcut with the icon in pycraft's folder.")

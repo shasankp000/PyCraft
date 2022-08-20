@@ -27,6 +27,8 @@ from zipfile import ZipFile
 from shutil import move
 import psutil
 
+from mod import downloadfromModrinth
+
 
 print("Starting PyCraft Launcher v1.04, please wait......")
 time.sleep(5)
@@ -902,7 +904,17 @@ class Pycraft():
         self.sn1.place(x=600, y=55.0)
 
 
+        self.b13 = Button(
+            self.canvas6,
+            text="Launch ModInstaller",
+            command=self.launch_modinstaller,
+            bootstyle="info-outline")
 
+
+        self.b13.place(
+            x = 120, y = 260,
+            width = 180,
+            height = 40)
 
         self.nb.add(self.frame1, text="Home")
         self.nb.add(self.p1, text="Installations")
@@ -2440,7 +2452,104 @@ class Pycraft():
             t4.join(timeout=3.0)
             self.window.deiconify()
 
+    def launch_modinstaller(self):
+        '''Launches the modinstaller window.'''
 
+        #self.window.withdraw()
+        self.mod_win = tk.Toplevel()
+        self.mod_win.geometry("640x480")
+        self.mod_win.title("Download window")
+        if os_name.startswith("Windows"):
+            self.mod_win.iconbitmap("icon.ico")
+        self.mod_win.configure(bg = "#ffffff")
+        self.mod_win.resizable(False,False)
+        self.canvas7 = Canvas(
+            self.mod_win,
+            bg = "#3a3a3a",
+            height = 768,
+            width = 1024,
+            bd = 0,
+            highlightthickness = 0,
+            relief = "ridge")
+        self.canvas7.place(x = 0, y = 0)
+
+        self.canvas7.create_text(
+            60.0, 55.0,
+            text = "Mod Name:",
+            fill = "#000000",
+            font = ("Galiver Sans", int(16.0), "bold"))
+
+        self.entry3 = Entry(
+            self.mod_win,
+            bd = 0,
+            bg = "#c4c4c4",
+            font = ("Sunshiney", 20),
+            highlightthickness = 0)
+
+        self.entry3.place(
+            x = 125.0, y = 45,
+            width = 500,
+            height = 30)
+
+        self.canvas7.create_text(
+            130.0, 95.0,
+            text = "Modloader(fabric/forge):",
+            fill = "#000000",
+            font = ("Galiver Sans", int(16.0), "bold"))
+
+
+        self.entry4 = Entry(
+            self.mod_win,
+            bd = 0,
+            bg = "#c4c4c4",
+            font = ("Sunshiney", 20),
+            highlightthickness = 0)
+
+        self.entry4.place(
+            x = 260.0, y = 85,
+            width = 380,
+            height = 30)
+
+        self.canvas7.create_text(
+            70.0, 135.0,
+            text = "Game Version:",
+            fill = "#000000",
+            font = ("Galiver Sans", int(16.0), "bold"))
+
+        self.entry5 = Entry(
+            self.mod_win,
+            bd = 0,
+            bg = "#c4c4c4",
+            font = ("Sunshiney", 20),
+            highlightthickness = 0)
+
+        self.entry5.place(
+            x = 145.0, y = 125,
+            width = 480,
+            height = 30)
+
+
+        self.b16 = Button(
+            self.mod_win,
+            text="Download",
+            command=self.download_mod,
+            bootstyle="info-outline")
+
+
+        self.b16.place(
+            x = 220, y = 360,
+            width = 180,
+            height = 40)
+
+
+    def download_mod(self):
+        '''Downloads the mod from Modrinth'''
+        self.modname = self.entry3.get()
+        self.modloader = self.entry4.get()
+        self.gamever = self.entry5.get()
+
+
+        downloadfromModrinth(self.modname,self.modloader,self.gamever),
 
 
 if __name__ == "__main__":

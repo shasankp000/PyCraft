@@ -25,8 +25,8 @@ jobs:
       - name: Extract EnVar plugin
         run: 7z x -o"${{ github.workspace }}/NSIS_Plugins" "${{ github.workspace }}/envar_plugin.zip"
   
-      - name: 'Install makensis (apt)'
-        run: sudo apt update && sudo apt install -y nsis nsis-pluginapi
+      - name: 'Install makensis and git (apt)'
+        run: sudo apt update && sudo apt install -y nsis nsis-pluginapi git
 
       - name: 'Set Plugin permissions'
         run: sudo chown -R $(whoami) /usr/share/nsis/Plugins/

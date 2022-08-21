@@ -170,7 +170,49 @@ ramlimiterExceptionBypassedSelected = data["ramlimiterExceptionBypassedSelected"
 
 
 
+def reload_data():
 
+    '''Reloads the json data.'''
+
+    global mc_home
+    global username
+    global uid
+    global os_name
+    global mc_dir
+    global selected_ver
+    global ramlimiterExceptionBypassed
+    global ramlimiterExceptionBypassedSelected
+    global auth_type
+    global jvm_args
+    global allocated_ram
+    global allocated_ram_selected
+    global accessToken
+
+
+    with open("settings.json", "r") as js_read:
+        s = js_read.read()
+        s = s.replace('\t','')  #Trailing commas in dict cause file read problems, these lines will fix it.
+        s = s.replace('\n','')  #Found this on stackoverflow.
+        s = s.replace(',}','}')
+        s = s.replace(',]',']')
+        data = json.loads(s)
+        #print(json.dumps(data, indent=4,))
+
+    os_name = data["PC-info"][0]["OS"]
+    mc_home = data["Minecraft-home"]
+    username = data["User-info"][0]["username"]
+    uid = data["User-info"][0]["UUID"]
+    accessToken = data["accessToken"]
+    mc_dir = data["Minecraft-home"]
+    auth_type = data["User-info"][0]["AUTH_TYPE"]
+    jvm_args = data["jvm-args"]
+    selected_ver = data["selected-version"]
+    tor_enabled = data["Tor-Enabled"]
+    tor_enabled_selected = data["setting-info"][0]["tor_enabled_selected"]
+    allocated_ram = data["allocated_ram"]
+    allocated_ram_selected = data["setting-info"][0]["allocated_ram_selected"]
+    ramlimiterExceptionBypassed = data["ramlimiterExceptionBypassed"]
+    ramlimiterExceptionBypassedSelected = data["ramlimiterExceptionBypassedSelected"]
 
 
 
@@ -202,7 +244,10 @@ def check_internet(url='https://www.google.com', timeout=5):
         connected = False
         print("No internet connection available.")
         Pycraft()
-
+    except requests.exceptions.Timeout:
+        connected = False
+        print("Connection Timed out")
+        Pycraft()
 
 
 
@@ -375,11 +420,15 @@ class Pycraft():
                 fill = "#000000",
                 font = ("Galiver Sans", int(16.0)))
 
-            self.offversionsList = Combobox(self.p1, width=15)
-            self.offversionsList.place(x=320, y=100)
-            self.offversionsList["values"] = self.offline_versions
-            self.offversionsList["state"] = "readonly"
-            self.offversionsList.current(0)
+            try:
+                self.offversionsList = Combobox(self.p1, width=15)
+                self.offversionsList.place(x=320, y=100)
+                self.offversionsList["values"] = self.offline_versions
+                self.offversionsList["state"] = "readonly"
+                self.offversionsList.current(0)
+            except:
+                showerror(message="There are no downloaded versions. Exiting....")
+
 
         else:
 
@@ -615,7 +664,7 @@ class Pycraft():
 
         self.canvas.create_text(
             70, 550,
-            text = "v1.04-beta-3",
+            text = "v1.04-beta-2",
             fill = "#000000",
             font = ("Galiver Sans", int(16.0)))
 
@@ -754,8 +803,7 @@ class Pycraft():
 
 
 
-
-        self.l3 = Label(
+        self.l7 = Label(
             self.window_s,
             text=f"Total : {self.ram*1000} MB",
             style = "info.TLabel",
@@ -764,7 +812,7 @@ class Pycraft():
             font=self.custom_font4
         )
 
-        self.l3.place(x=460, y=530)
+        self.l7.place(x=460, y=530)
 
 
             #self.entry0_img = PhotoImage(file = f"img/img_textBox3.png")
@@ -2107,33 +2155,51 @@ class Pycraft():
 
 
 
-            if data["User-info"][0]["username"] == None:
-                self.l3.config(text=self.u1, font=self.custom_font3, foreground="#15d38f", background="#23272a")
+            if data["User-info"][0]["username"] != None:
+                #self.l3.config(text=self.u1, font=self.custom_font3, foreground="#15d38f", background="#23272a")
+
+                data["User-info"][0]["username"] = self.u1
+                data["User-info"][0]["AUTH_TYPE"] = self.acc_method
+
+                if self.acc_method == "mojang login":
+                    self.l3.config(text=self.u1, font=self.custom_font3, foreground="#000000", background="#cacced")
+                    self.l4.config(text="mojang account", font=self.custom_font1, foreground="#000000", background="#cacced")
+                elif self.acc_method == "ely_by login":
+                    self.l3.config(text=self.u1, font=self.custom_font3, foreground="#000000", background="#cacced")
+                    self.l4.config(text="ely.by account", font=self.custom_font1, foreground="#000000", background="#cacced")
+                elif self.acc_method == "cracked login":
+                    self.l3.config(text=self.u1, font=self.custom_font3, foreground="#000000", background="#cacced")
+                    self.l4.config(text="no account", font=self.custom_font1, foreground="#000000", background="#cacced")
+
+                with open("settings.json", "w") as f:
+                        json.dump(data, f, indent=4)
+                        f.close()
+
+
+            else:
+                self.l3.config(text=self.u1, font=self.custom_font3, foreground="#000000", background="#cacced")
 
                 data["User-info"][0]["username"] = self.u1
                 data["User-info"][0]["AUTH_TYPE"] = self.acc_method
 
                 with open("settings.json", "w") as f:
-                    json.dump(data, f, indent=4)
-                    f.close()
-
-
-            else:
-                self.l3.config(text=data["User-info"][0]["username"], font=self.custom_font3, foreground="#15d38f", background="#23272a")
+                        json.dump(data, f, indent=4)
+                        f.close()
+   
 
 
             if self.acc_method == "mojang login":
-                self.l3.config(text=self.u1, font=self.custom_font3, foreground="#15d38f", background="#23272a")
-                self.l3.config(text=data["User-info"][0]["username"], font=self.custom_font3, foreground="#15d38f", background="#23272a")
-                self.l4.config(text="mojang account", font=self.custom_font1, foreground="#15d38f", background="#23272a")
+                self.l3.config(text=self.u1, font=self.custom_font3, foreground="#000000", background="#cacced")
+                self.l3.config(text=data["User-info"][0]["username"], font=self.custom_font3, foreground="#000000", background="#cacced")
+                self.l4.config(text="mojang account", font=self.custom_font1, foreground="#000000", background="#cacced")
             elif self.acc_method == "ely_by login":
-                self.l3.config(text=self.u1, font=self.custom_font3, foreground="#15d38f", background="#23272a")
-                self.l3.config(text=data["User-info"][0]["username"], font=self.custom_font3, foreground="#15d38f", background="#23272a")
-                self.l4.config(text="ely.by account", font=self.custom_font1, foreground="#15d38f", background="#23272a")
+                self.l3.config(text=self.u1, font=self.custom_font3, foreground="#000000", background="#cacced")
+                self.l3.config(text=data["User-info"][0]["username"], font=self.custom_font3, foreground="#000000", background="#cacced")
+                self.l4.config(text="ely.by account", font=self.custom_font1, foreground="#000000", background="#cacced")
             elif self.acc_method == "cracked login":
-                self.l3.config(text=self.u1, font=self.custom_font3, foreground="#15d38f", background="#23272a")
-                self.l3.config(text=data["User-info"][0]["username"], font=self.custom_font3, foreground="#15d38f", background="#23272a")
-                self.l4.config(text="no account", font=self.custom_font1, foreground="#15d38f", background="#23272a")
+                self.l3.config(text=self.u1, font=self.custom_font3, foreground="#000000", background="#cacced")
+                self.l3.config(text=data["User-info"][0]["username"], font=self.custom_font3, foreground="#000000", background="#cacced")
+                self.l4.config(text="no account", font=self.custom_font1, foreground="#000000", background="#cacced")
 
         else:
             data["User-info"][0]["AUTH_TYPE"] = "cracked login"
@@ -2143,12 +2209,12 @@ class Pycraft():
                 f.close()
 
             if data["User-info"][0]["username"] == None:
-                self.l3.config(text=self.u1, font=self.custom_font3, foreground="#15d38f", background="#23272a")
+                self.l3.config(text=self.u1, font=self.custom_font3, foreground="#000000", background="#cacced")
             else:
-                self.l3.config(text=data["User-info"][0]["username"], font=self.custom_font3, foreground="#15d38f", background="#23272a")
+                self.l3.config(text=data["User-info"][0]["username"], foreground="#000000", background="#cacced")
 
 
-            self.l4.config(text="User is offline", font=self.custom_font1, foreground="#15d38f", background="#23272a")
+            self.l4.config(text="User is offline", font=self.custom_font1, foreground="#000000", background="#cacced")
 
     def profile_window(self):
 
@@ -2471,7 +2537,7 @@ class Pycraft():
             self.mod_win,
             bd = 0,
             bg = "#c4c4c4",
-            font = ("Sunshiney", 20),
+            font = ("Galiver Sans", int(16.0), "bold"),
             highlightthickness = 0)
 
         self.entry3.place(
@@ -2490,7 +2556,7 @@ class Pycraft():
             self.mod_win,
             bd = 0,
             bg = "#c4c4c4",
-            font = ("Sunshiney", 20),
+            font = ("Galiver Sans", int(16.0), "bold"),
             highlightthickness = 0)
 
         self.entry4.place(
@@ -2508,7 +2574,7 @@ class Pycraft():
             self.mod_win,
             bd = 0,
             bg = "#c4c4c4",
-            font = ("Sunshiney", 20),
+            font = ("Galiver Sans", int(16.0), "bold"),
             highlightthickness = 0)
 
         self.entry5.place(

@@ -6,6 +6,6 @@ ttkbootstrap
 tkvideo
 requests
 Pillow
-git+https://github.com/jwaxy/tkhtmlview-fixed-ithink#egg=tkhtmlview
+tkhtmlview @ https://github.com/jwaxy/tkhtmlview-fixed-ithink/releases/download/tagtag/tkhtmlview.zip
 speedtest-cli
 psutil

@@ -63,7 +63,7 @@ Section "install" Installation
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "UninstallString" "$INSTDIR\Uninstall.exe"
  
   WriteUninstaller "$INSTDIR\Uninstall.exe"
-  File "build/dist/main.exe"
+  File "/home/runner/work/PyCraft/PyCraft/build/dist/main.exe"
  
 SectionEnd
  

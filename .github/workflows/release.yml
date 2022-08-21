@@ -2,6 +2,7 @@
 name: "tagged-release"
 
 on:
+  push:
   workflow_dispatch:
 
 jobs:

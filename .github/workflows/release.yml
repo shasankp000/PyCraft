@@ -1,0 +1,26 @@
+---
+name: "tagged-release"
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  tagged-release:
+    name: "Tagged Release"
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Package Application
+        uses: JackMcKew/pyinstaller-action-windows@main
+        with:
+          path: .
+
+      - run: mv ./dist/windows/main.exe ./dist/windows/pycraft.exe
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: PyCraft Nightly Build
+          path: ./dist/windows/pycraft.exe

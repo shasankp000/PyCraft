@@ -1,6 +1,8 @@
 # Project restarted 
   > Contributors to this project will really be appreciated.
 
+# New subreddit!
+  > The project has now a dedicated subreddit! https://www.reddit.com/r/PyCraftLauncher
 
 # Project Info
   >A Minecraft launcher made in python.

@@ -1,0 +1,46 @@
+---
+name: "tagged-release"
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  tagged-release:
+    name: "Tagged Release"
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Download EnVar plugin for NSIS
+        uses: carlosperate/download-file-action@v1.0.3
+        with:
+          file-url: https://nsis.sourceforge.io/mediawiki/images/7/7f/EnVar_plugin.zip
+          file-name: envar_plugin.zip
+          location: ${{ github.workspace }}
+
+      - name: Extract EnVar plugin
+        run: 7z x -o"${{ github.workspace }}/NSIS_Plugins" "${{ github.workspace }}/envar_plugin.zip"
+  
+      - name: 'Install makensis (apt)'
+        run: sudo apt update && sudo apt install -y nsis nsis-pluginapi
+
+      - name: 'Set Plugin permissions'
+        run: sudo chown -R $(whoami) /usr/share/nsis/Plugins/
+
+      - name: Package Application
+        uses: JackMcKew/pyinstaller-action-windows@main
+        with:
+          path: .
+
+      - name: Create installer
+        uses: joncloud/makensis-action@v3.7
+        with:
+          additional-plugin-paths: ${{ github.workspace }}/NSIS_Plugins/Plugins
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: PyCraft Nightly Build
+          path: pycraft_installer.exe

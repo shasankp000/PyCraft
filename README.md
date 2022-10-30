@@ -1,5 +1,9 @@
 # Project restarted 
   > Contributors to this project will really be appreciated.
+  
+  > Update: 30/10/22. This launcher is being rewritten in rust at the moment, will make up for all that this launcher lacks.
+  
+  > However this launcher will still have support if anyone wants to keep using it.
 
 # New subreddit!
   > The project has now a dedicated subreddit! https://www.reddit.com/r/PyCraftLauncher

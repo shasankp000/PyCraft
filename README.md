@@ -7,6 +7,11 @@
   
   > However this launcher will still have support if anyone wants to keep using it.
 
+  > Update 13/6/22. Updated version of this launcher : 
+https://github.com/v-pun215/eClient
+
+
+
 # New subreddit!
   > The project has now a dedicated subreddit! https://www.reddit.com/r/PyCraftLauncher
 

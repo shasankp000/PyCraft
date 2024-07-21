@@ -12,7 +12,7 @@ https://github.com/v-pun215/eClient
 
 # Like my work? Buy me a coffee
 
-https://buymeacoffee.com/shasankp000
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/shasankp000)
 
 So that I don't have to ask my mom for pocket money
 

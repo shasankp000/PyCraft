@@ -1,5 +1,10 @@
 [![justforfunnoreally.dev badge](https://img.shields.io/badge/justforfunnoreally-dev-9ff)](https://justforfunnoreally.dev)
 
+## Stargazers over time
+[![Stargazers over time](https://starchart.cc/shasankp000/PyCraft.svg?variant=adaptive)](https://starchart.cc/shasankp000/PyCraft)
+
+---
+
 # Project restarted 
   > Contributors to this project will really be appreciated.
   
